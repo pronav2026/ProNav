@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GLB triangle selector</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <style>
+    :root { color-scheme: dark; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #0b1220; color: #e7edf7; }
+    main { width: min(1280px, calc(100% - 28px)); margin: 18px auto 32px; }
+    h1 { margin: 0; font-size: clamp(1.25rem, 2.4vw, 1.9rem); letter-spacing: -.02em; }
+    .intro { margin: 6px 0 14px; color: #9eacc1; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 14px; align-items: stretch; }
+    .viewport { position: relative; min-height: min(72vh, 720px); overflow: hidden; border: 1px solid #d9e0e8; border-radius: 12px; background: #fbfcfd; box-shadow: 0 18px 45px #10213a18; }
+    canvas { display: block; width: 100%; height: 100%; min-height: min(72vh, 720px); cursor: crosshair; }
+    .hud { position: absolute; left: 14px; top: 14px; padding: 7px 10px; border: 1px solid #46648c; border-radius: 6px; background: #0c1728cc; color: #a9c7f3; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; pointer-events: none; }
+    .selection-rect { display: none; position: absolute; z-index: 2; border: 1px dashed #73c5ff; background: rgba(61, 160, 255, .18); pointer-events: none; }
+    aside { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #32425b; border-radius: 12px; background: #111d30; }
+    .status { padding: 12px; border: 1px solid #2c415e; border-radius: 8px; background: #0d1727; color: #b8c7dc; font-size: 13px; line-height: 1.5; }
+    .status strong { display: block; margin-bottom: 4px; color: #75adff; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+    .light-controls { display: grid; gap: 9px; padding: 12px; border: 1px solid #2c415e; border-radius: 8px; background: #0d1727; }
+    .light-controls > strong { color: #75adff; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+    .light-control { display: grid; grid-template-columns: 1fr auto; gap: 5px 8px; align-items: center; color: #b8c7dc; font-size: 12px; }
+    .light-control output { color: #dceaff; font-variant-numeric: tabular-nums; }
+    .light-control input { grid-column: 1 / -1; width: 100%; accent-color: #73b5ff; }
+    .actions { display: grid; gap: 8px; margin-top: auto; }
+    button, label.file-button { display: block; width: 100%; border: 0; border-radius: 7px; padding: 10px 12px; font: inherit; font-weight: 700; color: #08111f; background: #85baff; cursor: pointer; text-align: center; }
+    button.secondary, label.file-button { color: #d8e6fb; background: #263a56; }
+    button:hover, label.file-button:hover { filter: brightness(1.1); }
+    input[type=file] { display: none; }
+    .hint { margin: 0; color: #8494aa; font-size: 12px; line-height: 1.55; }
+    @media (max-width: 820px) { .workspace { grid-template-columns: 1fr; } aside { order: -1; } .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } .viewport, canvas { min-height: 58vh; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>GLB triangle selector</h1>
+    <p class="intro">Click a triangle for single-face selection. Hold <kbd>Shift</kbd> and drag a box to select multiple faces; drag normally to orbit.</p>
+    <div class="workspace">
+      <section class="viewport" aria-label="3D GLB viewport">
+        <canvas id="canvas"></canvas>
+        <div class="hud">Click face to select</div>
+        <div id="selectionRect" class="selection-rect" aria-hidden="true"></div>
+      </section>
+      <aside>
+        <div class="status" id="status"><strong>Model</strong>Loading 2026_7_13-edited.glb…</div>
+        <div class="status" id="selection"><strong>Selection</strong>Nothing selected.</div>
+        <p class="hint">The model has three meshes, but selection is now triangle-level. Remove faces one at a time without deleting the whole mesh.</p>
+        <div class="light-controls">
+          <strong>Lighting</strong>
+          <label class="light-control">Exposure <output id="exposureValue">1.00</output><input id="exposureControl" type="range" min="0.50" max="1.80" step="0.01" value="1.00" /></label>
+          <label class="light-control">Ambient <output id="ambientValue">1.80</output><input id="ambientControl" type="range" min="0" max="2.50" step="0.05" value="1.80" /></label>
+          <label class="light-control">Key light <output id="keyValue">0.70</output><input id="keyControl" type="range" min="0" max="3.00" step="0.05" value="0.70" /></label>
+          <label class="light-control">Fill light <output id="fillValue">0.80</output><input id="fillControl" type="range" min="0" max="3.00" step="0.05" value="0.80" /></label>
+          <label class="light-control">Rim light <output id="rimValue">0.35</output><input id="rimControl" type="range" min="0" max="2.00" step="0.05" value="0.35" /></label>
+          <label class="light-control">XYZ fill <output id="axisValue">0.25</output><input id="axisControl" type="range" min="0" max="1.00" step="0.05" value="0.25" /></label>
+          <label class="light-control">Corner fill <output id="cornerValue">0.12</output><input id="cornerControl" type="range" min="0" max="0.80" step="0.02" value="0.12" /></label>
+          <label class="light-control">Surface reflection <output id="envValue">0.25</output><input id="envControl" type="range" min="0" max="1.50" step="0.05" value="0.25" /></label>
+        </div>
+        <div class="actions">
+          <label class="file-button" for="fileInput">Open another GLB</label>
+          <input id="fileInput" type="file" accept=".glb,model/gltf-binary" />
+          <button id="hideButton" type="button">Remove selected faces</button>
+          <button id="undoButton" class="secondary" type="button">Undo last</button>
+          <button id="resetButton" class="secondary" type="button">Reset model</button>
+          <button id="exportButton" type="button">Export edited GLB</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    const canvas = document.querySelector('#canvas');
+    const status = document.querySelector('#status');
+    const selectionStatus = document.querySelector('#selection');
+    const fileInput = document.querySelector('#fileInput');
+    const hideButton = document.querySelector('#hideButton');
+    const undoButton = document.querySelector('#undoButton');
+    const resetButton = document.querySelector('#resetButton');
+    const exportButton = document.querySelector('#exportButton');
+    const exposureControl = document.querySelector('#exposureControl');
+    const ambientControl = document.querySelector('#ambientControl');
+    const keyControl = document.querySelector('#keyControl');
+    const fillControl = document.querySelector('#fillControl');
+    const rimControl = document.querySelector('#rimControl');
+    const axisControl = document.querySelector('#axisControl');
+    const cornerControl = document.querySelector('#cornerControl');
+    const envControl = document.querySelector('#envControl');
+    const exposureValue = document.querySelector('#exposureValue');
+    const ambientValue = document.querySelector('#ambientValue');
+    const keyValue = document.querySelector('#keyValue');
+    const fillValue = document.querySelector('#fillValue');
+    const rimValue = document.querySelector('#rimValue');
+    const axisValue = document.querySelector('#axisValue');
+    const cornerValue = document.querySelector('#cornerValue');
+    const envValue = document.querySelector('#envValue');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.00;
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xfbfcfd);
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000);
+    camera.position.set(0, 1.2, 15);
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    const loader = new GLTFLoader();
+    const exporter = new GLTFExporter();
+    const light = new THREE.HemisphereLight(0xffffff, 0xe1e7ee, 1.35);
+    scene.add(light);
+    const ambient = new THREE.AmbientLight(0xffffff, 1.80);
+    scene.add(ambient);
+    const key = new THREE.DirectionalLight(0xffffff, 0.70);
+    key.position.set(4, 8, 6);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xdbeaff, 0.80);
+    fill.position.set(-6, 3, 4);
+    scene.add(fill);
+    const rim = new THREE.DirectionalLight(0xffffff, 0.35);
+    rim.position.set(0, 5, -7);
+    scene.add(rim);
+    const axisLights = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].map(([x, y, z]) => {
+      const axisLight = new THREE.DirectionalLight(0xffffff, 0.25);
+      axisLight.position.set(x * 10, y * 10, z * 10);
+      scene.add(axisLight);
+      return axisLight;
+    });
+    const cornerLights = [-1, 1].flatMap(x => [-1, 1].flatMap(y => [-1, 1].map(z => [x, y, z]))).map(([x, y, z]) => {
+      const cornerLight = new THREE.DirectionalLight(0xffffff, 0.12);
+      cornerLight.position.set(x * 9, y * 9, z * 9);
+      scene.add(cornerLight);
+      return cornerLight;
+    });
+    const grid = new THREE.GridHelper(30, 30, 0xd9e1ea, 0xf0f3f6);
+    grid.position.y = -2.2;
+    scene.add(grid);
+
+    function updateLighting() {
+      renderer.toneMappingExposure = Number(exposureControl.value);
+      ambient.intensity = Number(ambientControl.value);
+      key.intensity = Number(keyControl.value);
+      fill.intensity = Number(fillControl.value);
+      rim.intensity = Number(rimControl.value);
+      axisLights.forEach(axisLight => { axisLight.intensity = Number(axisControl.value); });
+      cornerLights.forEach(cornerLight => { cornerLight.intensity = Number(cornerControl.value); });
+      const environmentIntensity = Number(envControl.value);
+      [exposureValue, ambientValue, keyValue, fillValue, rimValue, axisValue, cornerValue, envValue].forEach((output, index) => {
+        const controls = [exposureControl, ambientControl, keyControl, fillControl, rimControl, axisControl, cornerControl, envControl];
+        output.value = Number(controls[index].value).toFixed(2);
+        output.textContent = output.value;
+      });
+      if (modelRoot) {
+        modelRoot.traverse(object => {
+          if (!object.isMesh) return;
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          materials.forEach(material => {
+            if (material && 'envMapIntensity' in material) material.envMapIntensity = environmentIntensity;
+          });
+        });
+      }
+    }
+    [exposureControl, ambientControl, keyControl, fillControl, rimControl, axisControl, cornerControl, envControl].forEach(control => control.addEventListener('input', updateLighting));
+    let modelRoot = null;
+    let selectedFaces = new Map();
+    let faceOverlay = null;
+    let undoStack = [];
+    let modelUrl = '2026_7_13-edited.glb';
+    const selectionRect = document.querySelector('#selectionRect');
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      renderer.setSize(rect.width, rect.height, false);
+      camera.aspect = rect.width / rect.height;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize);
+
+    function fitModel(root) {
+      const box = new THREE.Box3().setFromObject(root);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      root.position.sub(center);
+      const radius = Math.max(size.x, size.y, size.z) * 0.5;
+      camera.position.set(0, radius * 0.45, Math.max(radius * 3.4, 1));
+      camera.near = Math.max(radius / 100, 0.01);
+      camera.far = Math.max(radius * 20, 100);
+      camera.updateProjectionMatrix();
+      controls.target.set(0, 0, 0);
+      controls.update();
+    }
+
+    function meshList() { return modelRoot ? modelRoot.userData.selectableMeshes || [] : []; }
+
+    function clearFaceOverlay() {
+      if (!faceOverlay) return;
+      scene.remove(faceOverlay);
+      faceOverlay.geometry.dispose();
+      faceOverlay.material.dispose();
+      faceOverlay = null;
+    }
+
+    function faceVertexIndices(mesh, faceIndex) {
+      const index = mesh.geometry.index;
+      if (index) return [index.getX(faceIndex * 3), index.getX(faceIndex * 3 + 1), index.getX(faceIndex * 3 + 2)];
+      return [faceIndex * 3, faceIndex * 3 + 1, faceIndex * 3 + 2];
+    }
+
+    function highlightFaces() {
+      clearFaceOverlay();
+      scene.updateMatrixWorld(true);
+      const vertices = [];
+      selectedFaces.forEach((faces, mesh) => {
+        const position = mesh.geometry.attributes.position;
+        faces.forEach(faceIndex => {
+          faceVertexIndices(mesh, faceIndex).forEach(index => {
+            const point = new THREE.Vector3().fromBufferAttribute(position, index).applyMatrix4(mesh.matrixWorld);
+            vertices.push(point.x, point.y, point.z);
+          });
+        });
+      });
+      if (!vertices.length) return;
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+      geometry.computeVertexNormals();
+      const material = new THREE.MeshBasicMaterial({ color: 0x39bdf8, transparent: true, opacity: 0.55, depthTest: false, side: THREE.DoubleSide });
+      faceOverlay = new THREE.Mesh(geometry, material);
+      faceOverlay.renderOrder = 1000;
+      scene.add(faceOverlay);
+    }
+
+    function setSelection(selection) {
+      clearFaceOverlay();
+      selectedFaces = selection || new Map();
+      let count = 0;
+      selectedFaces.forEach(faces => { count += faces.size; });
+      if (!count) {
+        selectionStatus.innerHTML = '<strong>Selection</strong>Nothing selected.';
+        return;
+      }
+      selectionStatus.innerHTML = `<strong>Selection</strong>${count.toLocaleString()} faces selected<br>${selectedFaces.size} mesh${selectedFaces.size === 1 ? '' : 'es'}`;
+      highlightFaces();
+    }
+
+    function loadModel(input) {
+      if (modelRoot) scene.remove(modelRoot);
+      setSelection(null);
+      undoStack = [];
+      status.innerHTML = '<strong>Model</strong>Loading…';
+      const onLoad = gltf => {
+        modelRoot = gltf.scene;
+        const meshes = [];
+        modelRoot.traverse(object => {
+          if (!object.isMesh) return;
+          if (!object.geometry.getAttribute('normal')) object.geometry.computeVertexNormals();
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          materials.forEach(material => {
+            if (!material) return;
+            if ('envMapIntensity' in material) material.envMapIntensity = Number(envControl.value);
+          });
+          object.userData.meshLabel = `Mesh ${meshes.length + 1}`;
+          object.userData.originalVisible = true;
+          object.userData.originalGeometry = object.geometry.clone();
+          meshes.push(object);
+        });
+        modelRoot.userData.selectableMeshes = meshes;
+        scene.add(modelRoot);
+        fitModel(modelRoot);
+        status.innerHTML = `<strong>Model</strong>${meshes.length} meshes loaded · triangle selection active.`;
+      };
+      const onError = error => { status.innerHTML = `<strong>Error</strong>Could not load this GLB.`; console.error(error); };
+      if (typeof input === 'string') loader.load(input, onLoad, undefined, onError);
+      else loader.parse(input, '', onLoad, onError);
+    }
+
+    function localPointer(event) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    }
+    function normalizedRect(a, b) {
+      return { x1: Math.min(a.x, b.x), y1: Math.min(a.y, b.y), x2: Math.max(a.x, b.x), y2: Math.max(a.y, b.y) };
+    }
+    function drawSelectionRect(a, b) {
+      const rect = normalizedRect(a, b);
+      selectionRect.style.display = 'block';
+      selectionRect.style.left = `${rect.x1}px`;
+      selectionRect.style.top = `${rect.y1}px`;
+      selectionRect.style.width = `${rect.x2 - rect.x1}px`;
+      selectionRect.style.height = `${rect.y2 - rect.y1}px`;
+    }
+    function hideSelectionRect() { selectionRect.style.display = 'none'; }
+
+    function faceCenterOnScreen(mesh, faceIndex, canvasRect) {
+      const position = mesh.geometry.attributes.position;
+      const points = faceVertexIndices(mesh, faceIndex).map(index => new THREE.Vector3().fromBufferAttribute(position, index).applyMatrix4(mesh.matrixWorld));
+      const center = points[0].add(points[1]).add(points[2]).multiplyScalar(1 / 3).project(camera);
+      return { x: (center.x * 0.5 + 0.5) * canvasRect.width, y: (-center.y * 0.5 + 0.5) * canvasRect.height, z: center.z };
+    }
+    function facesInRect(rect) {
+      scene.updateMatrixWorld(true);
+      const canvasRect = canvas.getBoundingClientRect();
+      const selection = new Map();
+      meshList().filter(mesh => mesh.visible).forEach(mesh => {
+        const count = mesh.geometry.index ? mesh.geometry.index.count / 3 : mesh.geometry.attributes.position.count / 3;
+        const faces = new Set();
+        for (let faceIndex = 0; faceIndex < count; faceIndex += 1) {
+          const center = faceCenterOnScreen(mesh, faceIndex, canvasRect);
+          if (center.z >= -1 && center.z <= 1 && center.x >= rect.x1 && center.x <= rect.x2 && center.y >= rect.y1 && center.y <= rect.y2) faces.add(faceIndex);
+        }
+        if (faces.size) selection.set(mesh, faces);
+      });
+      return selection;
+    }
+
+    let pointerDown = null;
+    let boxSelecting = false;
+    canvas.addEventListener('pointerdown', event => {
+      pointerDown = localPointer(event);
+      if (event.shiftKey) {
+        boxSelecting = true;
+        controls.enabled = false;
+        canvas.setPointerCapture(event.pointerId);
+        drawSelectionRect(pointerDown, pointerDown);
+      }
+    });
+    canvas.addEventListener('pointermove', event => {
+      if (boxSelecting && pointerDown) drawSelectionRect(pointerDown, localPointer(event));
+    });
+    canvas.addEventListener('pointerup', event => {
+      if (!modelRoot) return;
+      const end = localPointer(event);
+      if (boxSelecting) {
+        controls.enabled = true;
+        boxSelecting = false;
+        hideSelectionRect();
+        if (Math.hypot(end.x - pointerDown.x, end.y - pointerDown.y) > 7) setSelection(facesInRect(normalizedRect(pointerDown, end)));
+        else {
+          const rect = canvas.getBoundingClientRect();
+          pointer.x = (end.x / rect.width) * 2 - 1;
+          pointer.y = -(end.y / rect.height) * 2 + 1;
+          raycaster.setFromCamera(pointer, camera);
+          const hit = raycaster.intersectObjects(meshList().filter(mesh => mesh.visible), false)[0];
+          if (hit) setSelection(new Map([[hit.object, new Set([hit.faceIndex])] ]));
+          else setSelection(null);
+        }
+        canvas.releasePointerCapture(event.pointerId);
+        pointerDown = null;
+        return;
+      }
+      if (pointerDown && Math.hypot(end.x - pointerDown.x, end.y - pointerDown.y) > 7) { pointerDown = null; return; }
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = (end.x / rect.width) * 2 - 1;
+      pointer.y = -(end.y / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const hit = raycaster.intersectObjects(meshList().filter(mesh => mesh.visible), false)[0];
+      if (hit) setSelection(new Map([[hit.object, new Set([hit.faceIndex])] ]));
+      else setSelection(null);
+      pointerDown = null;
+    });
+
+    function removeFaces(mesh, faces) {
+      const source = mesh.geometry;
+      const next = source.clone();
+      const index = source.index;
+      if (!index) return false;
+      const indices = Array.from(index.array);
+      const kept = [];
+      for (let faceIndex = 0; faceIndex < indices.length / 3; faceIndex += 1) {
+        if (faces.has(faceIndex)) continue;
+        kept.push(indices[faceIndex * 3], indices[faceIndex * 3 + 1], indices[faceIndex * 3 + 2]);
+      }
+      const IndexArray = index.array instanceof Uint32Array || kept.length > 65535 ? Uint32Array : Uint16Array;
+      next.setIndex(new THREE.BufferAttribute(new IndexArray(kept), 1));
+      next.computeBoundingBox();
+      next.computeBoundingSphere();
+      mesh.geometry = next;
+      return true;
+    }
+
+    hideButton.addEventListener('click', () => {
+      if (!selectedFaces.size) return;
+      const transaction = [];
+      selectedFaces.forEach((faces, mesh) => {
+        const source = mesh.geometry;
+        if (removeFaces(mesh, faces)) transaction.push({ mesh, geometry: source });
+      });
+      if (transaction.length) undoStack.push(transaction);
+      setSelection(null);
+    });
+    undoButton.addEventListener('click', () => {
+      const transaction = undoStack.pop();
+      if (!transaction) return;
+      transaction.forEach(record => {
+        const current = record.mesh.geometry;
+        record.mesh.geometry = record.geometry;
+        current.dispose();
+      });
+      setSelection(null);
+    });
+    resetButton.addEventListener('click', () => {
+      meshList().forEach(mesh => {
+        if (mesh.userData.originalGeometry) {
+          mesh.geometry.dispose();
+          mesh.geometry = mesh.userData.originalGeometry.clone();
+        }
+        mesh.visible = true;
+      });
+      undoStack = [];
+      setSelection(null);
+    });
+    exportButton.addEventListener('click', () => {
+      if (!modelRoot) return;
+      exporter.parse(modelRoot, result => {
+        const blob = new Blob([result], { type: 'model/gltf-binary' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = '2026_7_13-edited.glb';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      }, error => console.error(error), { binary: true, onlyVisible: true });
+    });
+    fileInput.addEventListener('change', event => {
+      const file = event.target.files?.[0];
+      if (file) file.arrayBuffer().then(buffer => loadModel(buffer));
+    });
+    resize();
+    updateLighting();
+    loadModel(modelUrl);
+    renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+  </script>
+</body>
+</html>

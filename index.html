@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="ProNav: Room-Prior-Guided Exploration for Zero-Shot Object Navigation." />
+  <meta property="og:title" content="ProNav" />
+  <meta property="og:description" content="Room-prior-guided exploration for zero-shot object navigation." />
+  <meta property="og:image" content="assets/figures/hero-overview.jpg" />
+  <title>ProNav | Room-Prior-Guided Object Navigation</title>
+  <link rel="stylesheet" href="styles.css?v=20260714-tech-glass" />
+</head>
+<body>
+  <canvas class="topology-background" aria-hidden="true"></canvas>
+  <nav class="topbar" aria-label="Page navigation">
+    <a href="#" class="brand">ProNav</a>
+    <div>
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <!-- <a href="#results">Results</a> -->
+      <a href="#real-world">Robot Demo</a>
+      <a href="#simulation">Simulation</a>
+      <!-- <a href="#citation">BibTeX</a> -->
+    </div>
+  </nav>
+
+  <main>
+    <header class="paper-header">
+      <p class="venue">Commonsense as a Prior, Not an Online Controller</p>
+      <h1>
+        <span class="project-name">ProNav</span>:<br />
+        Room-Prior-Guided Exploration<br />
+        for Zero-Shot Object Navigation
+      </h1>
+      <p class="authors">Anonymous Author(s)</p>
+      <div class="paper-links" aria-label="Project links">
+        <!-- <a href="#citation">Paper</a> -->
+        <a href="#real-world"><span class="link-icon" aria-hidden="true">🎬</span>Robot Demo</a>
+        <a href="#simulation"><span class="link-icon" aria-hidden="true">▦</span>Simulation</a>
+        <span class="paper-link" aria-label="Code (Soon)" aria-disabled="true">
+          <svg class="github-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.4-5.5-6a4.7 4.7 0 0 1 1.2-3.3c-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.3 1.3a11.4 11.4 0 0 1 6 0C17.2 5.4 18.2 5.7 18.2 5.7c.6 1.7.2 3 .1 3.3a4.7 4.7 0 0 1 1.2 3.3c0 4.6-2.8 5.7-5.5 6 .4.3.7 1 .7 2v2.8c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+          </svg>
+          <span>Code (Soon)</span>
+        </span>
+        <!-- <a href="#results">Results</a> -->
+      </div>
+      <figure class="paper-figure header-teaser">
+        <img src="assets/figures/hero-overview.jpg"
+             alt="ProNav overview showing one-time priors, online mapping, room-guided exploration, and target verification." />
+        <figcaption>Room priors guide exploration while scale-aware verification stabilizes stopping.</figcaption>
+      </figure>
+      <div id="abstract" class="header-abstract">
+        <h2>Abstract</h2>
+        <p>
+          Finding unseen objects in unfamiliar environments remains a fundamental challenge for embodied agents.
+          Existing zero-shot object navigation approaches either rely on costly online reasoning or suffer from
+          inefficient exploration without high-level environmental priors. We introduce <strong>ProNav</strong>, a
+          training-free room-aware framework that leverages <strong>room priors</strong> for efficient navigation.
+          ProNav first obtains target-room knowledge and object-scale cues through a single pre-navigation query,
+          then performs <strong>room-guided frontier exploration</strong> during navigation. A lightweight,
+          <strong>scale-aware multi-frame verifier</strong> further improves reliability by confirming candidate
+          detections and their expected scale across frames before termination. Extensive experiments on HM3D and
+          MP3D demonstrate that ProNav achieves strong
+          zero-shot navigation performance while reducing redundant exploration. Real-world experiments on robotic
+          platforms further validate its practical effectiveness.
+        </p>
+      </div>
+    </header>
+
+    <section class="content-section motivation">
+      <h2>Motivation</h2>
+      <div class="motivation-main">
+        <div class="motivation-copy">
+          <p class="motivation-kicker">Semantic guidance meets path efficiency.</p>
+          <p class="motivation-statement">
+            Commonsense as a <span>prior</span>,<br />
+            <em>not an online controller.</em>
+          </p>
+          <p class="motivation-bridge">
+            <strong>What to search</strong>: target-conditioned cues.<br />
+            <strong>Where to search</strong>: room priors identify relevant rooms.<br />
+            <strong>How to search</strong>: topology-aware costs favor efficient paths.
+          </p>
+        </div>
+        <figure class="paper-figure motivation-figure">
+          <img src="assets/figures/motivation.jpg"
+               alt="Motivation comparison among local value-map exploration, step-wise LLM navigation, and ProNav." />
+        </figure>
+      </div>
+    </section>
+
+    <section id="method" class="content-section">
+      <h2>Method</h2>
+      <p class="method-tagline">Smarter exploration. Faster paths. Accurate localization.</p>
+      <figure class="paper-figure method-overview">
+        <img src="assets/figures/pipeline.png?v=20260712-pipeline"
+             alt="ProNav pipeline showing target-conditioned priors, multimodal mapping, room-guided exploration, and scale-aware target verification." />
+        <figcaption>ProNav pipeline: one-time priors, multimodal mapping, room-guided exploration, and scale-aware verification.</figcaption>
+      </figure>
+      <div class="method-list">
+        <article>
+          <div class="method-heading">
+            <span class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M8.5 14.5a5 5 0 1 1 7 0c-.9.8-1.5 1.7-1.5 2.5h-4c0-.8-.6-1.7-1.5-2.5Z" /><path d="M12 2v2M4.9 4.9l1.4 1.4M19.1 4.9l-1.4 1.4" /></svg>
+            </span>
+            <h3>One-time commonsense prior</h3>
+          </div>
+          <p>Room preference, object scale, and confusable-object cues.</p>
+        </article>
+        <article>
+          <div class="method-heading">
+            <span class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2V5Z" /><path d="M9 3v16M15 5v16" /></svg>
+            </span>
+            <h3>Room-prior-guided exploration</h3>
+          </div>
+          <p>Semantic maps let room priors guide frontier selection.</p>
+        </article>
+        <article>
+          <div class="method-heading">
+            <span class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M6 6l6 11L18 6M6 6h12" /><circle cx="6" cy="6" r="2" /><circle cx="18" cy="6" r="2" /><circle cx="12" cy="17" r="2" /></svg>
+            </span>
+            <h3>Topology-aware path optimization</h3>
+          </div>
+          <p>Topology-aware costs and adaptive granularity reduce detours.</p>
+        </article>
+        <article>
+          <div class="method-heading">
+            <span class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4Z" /><path d="M8 7v4m4-4v6m4-6v4" /></svg>
+            </span>
+            <h3>Scale-aware verification</h3>
+          </div>
+          <p>Cross-frame confidence and size checks confirm the target.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="real-world" class="content-section">
+      <h2>Robot Demo</h2>
+      <p class="section-lead">
+        Real-world trials are conducted on low-cost robotic platforms in an office building with interconnected
+        hallways, bathrooms, computer rooms, and cluttered indoor spaces. Videos and figures below show both
+        controlled ablations and multi-target cross-room navigation cases.
+      </p>
+      <div class="section-subheading">
+        <h3>Platforms &amp; demo</h3>
+        <p>Two low-cost robotic platforms and an indoor scene showcase.</p>
+      </div>
+      <div class="robot-grid">
+        <figure class="paper-figure robot-card" data-label="01 / PLATFORM">
+          <div class="robot-visual robot-visual-backdrop">
+            <img class="robot-backdrop" src="assets/figures/robot-card-backdrop.png" alt="" aria-hidden="true" />
+            <img class="robot-photo" src="assets/figures/robot-mecanum-cropped.jpg?v=20260713-topcrop" alt="Mecanum-wheel mobile robot." />
+          </div>
+          <figcaption>Mecanum-wheel mobile robot with RGB-D camera.</figcaption>
+        </figure>
+        <figure class="paper-figure robot-card" data-label="02 / PLATFORM">
+          <div class="robot-visual">
+            <img class="robot-photo robot-photo-raised" src="assets/figures/robot-xlerobot.jpg?v=20260713-original" alt="XLerobot mobile dual-arm robot." />
+          </div>
+          <figcaption>XLerobot-configuration mobile dual-arm robot.</figcaption>
+        </figure>
+        <figure class="paper-figure robot-card robot-video-figure" data-label="03 / SCENE">
+          <video class="robot-demo-video lazy-video" controls preload="none" playsinline
+                 poster="assets/posters/indoor-scene-showcase.jpg">
+            <source data-src="videos/indoor-scene-showcase.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <figcaption>Indoor scene showcase from a real-world scan.</figcaption>
+        </figure>
+      </div>
+      <div class="section-subheading">
+        <h3>Real-world validation</h3>
+        <p>Multi-target trials, controlled ablations, and value-map overlays demonstrate cross-room navigation in cluttered indoor environments.</p>
+      </div>
+      <figure class="paper-figure">
+        <img src="assets/figures/real-world-cases.jpg" alt="Four real-world ProNav navigation cases." />
+        <figcaption>Multi-target cross-room real-world trials with first-person observations and online value maps.</figcaption>
+      </figure>
+      <!--
+      <div class="table-wrap compact-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Easy SR / SPL</th>
+              <th>Hard SR / SPL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Target relevance only</td>
+              <td>24/24 (100.0) / 0.85</td>
+              <td>16/24 (66.7) / 0.34</td>
+            </tr>
+            <tr class="best">
+              <td>ProNav</td>
+              <td>24/24 (100.0) / 0.87</td>
+              <td>22/24 (91.7) / 0.63</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      -->
+      <div class="video-grid no-sync">
+        <article data-result="success">
+          <div class="result-badge">✓ Success</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/potted-plant-search.jpg">
+            <source data-src="videos/potted-plant-search.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>Potted plant search</h3>
+        </article>
+        <article data-result="success">
+          <div class="result-badge">✓ Success</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/air-conditioner-search.jpg">
+            <source data-src="videos/air-conditioner-search.mp4?v=20260710-mask-29" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>Air conditioner search</h3>
+        </article>
+        <article data-result="success">
+          <div class="result-badge">✓ Success</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/trash-can-search.jpg">
+            <source data-src="videos/trash-can-search.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>Trash can search</h3>
+        </article>
+      </div>
+      <div class="section-subheading">
+        <h3>Room-prior ablation</h3>
+        <p>ProNav vs. target relevance only on real-world scenes.</p>
+      </div>
+      <figure class="paper-figure medium">
+        <img src="assets/figures/overlay-comparison.jpg" alt="Overlay comparison between ProNav and target relevance only." />
+        <figcaption>Value-map overlay comparison: ProNav (top) vs. target relevance only (bottom).</figcaption>
+      </figure>
+      <div class="video-main">
+        <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/room-prior-ablation.jpg">
+          <source data-src="videos/room-prior-ablation.mp4?v=20260712-653s" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <p>
+          Controlled ablation comparison: ProNav uses room priors to reallocate exploration effort, while
+          the target-relevance-only variant can revisit low-priority regions.
+        </p>
+      </div>
+      <p class="note">
+        More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
+      </p>
+    </section>
+
+    <section id="simulation" class="content-section">
+      <h2>Simulated Experiments</h2>
+      <p class="section-lead">
+        Experiments are conducted in Habitat on HM3Dv1, HM3Dv2, and MP3D using the official ObjectNav
+        success, SPL, and softSPL metrics.
+      </p>
+      <div class="simulation-hero">
+        <figure class="paper-figure simulation-trajectory">
+          <div class="simulation-media">
+            <img src="assets/figures/hm3d-room-grid.jpg?v=20260712-hm3d-grid"
+                 alt="5 by 5 grid of 25 official HM3D scene dollhouse previews." />
+          </div>
+          <figcaption>25 HM3D scene previews showing the scale and variety of indoor environments.</figcaption>
+        </figure>
+        <figure class="paper-figure simulation-table-fig">
+          <div class="simulation-media">
+            <img src="assets/figures/benchmark-comparison.png"
+                 alt="Benchmark comparison across HM3Dv1, HM3Dv2, and MP3D." />
+          </div>
+          <figcaption>Benchmark comparison across HM3Dv1, HM3Dv2, and MP3D.</figcaption>
+        </figure>
+      </div>
+      <div class="dataset-strip">
+        <article>
+          <strong>HM3Dv1</strong>
+          <span class="cat-summary">6 object categories</span>
+          <span>20 scenes · 2000 episodes</span>
+        </article>
+        <article>
+          <strong>HM3Dv2</strong>
+          <span class="cat-summary">6 object categories</span>
+          <span>36 scenes · 1000 episodes</span>
+        </article>
+        <article>
+          <strong>MP3D</strong>
+          <span class="cat-summary">21 object categories</span>
+          <span>11 scenes · 2195 episodes</span>
+        </article>
+      </div>
+      <div class="section-subheading">
+        <h3>Room-prior ablation</h3>
+        <p>Target relevance only vs. ProNav on HM3D scenes.</p>
+      </div>
+      <div class="video-grid">
+        <article data-result="success">
+          <div class="result-badge">✓ Success</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/room-prior-pronav.jpg">
+            <source data-src="videos/room-prior-pronav.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>ProNav</h3>
+        </article>
+        <article data-result="timeout">
+          <div class="result-badge">✗ Timeout</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/room-prior-baseline.jpg">
+            <source data-src="videos/room-prior-baseline.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>Target relevance only</h3>
+        </article>
+      </div>
+      <div class="section-subheading">
+        <h3>Topology-aware path efficiency ablation</h3>
+        <p>Without topology-aware access cost vs. ProNav on HM3D scenes.</p>
+      </div>
+      <figure class="paper-figure topology-ablation-fig">
+        <img src="assets/figures/topology-ablation.png" alt="Topology-aware access cost ablation." />
+        <figcaption>Topology-aware access cost reduces detours and improves SPL.</figcaption>
+      </figure>
+      <div class="video-grid topology-video-grid">
+        <article data-result="success">
+          <div class="result-badge">✓ Success</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/topology-pronav.jpg">
+            <source data-src="videos/topology-pronav.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>ProNav</h3>
+        </article>
+        <article data-result="timeout">
+          <div class="result-badge">✗ Timeout</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/topology-baseline.jpg">
+            <source data-src="videos/topology-baseline.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>w/o topology-aware path</h3>
+        </article>
+      </div>
+      <div class="section-subheading">
+        <h3>Adaptive granularity ablation</h3>
+        <p>Without adaptive granularity vs. ProNav on HM3D scenes.</p>
+      </div>
+      <div class="video-grid">
+        <article data-result="success">
+          <div class="result-badge">✓ Success</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/adaptive-granularity-pronav.jpg">
+            <source data-src="videos/adaptive-granularity-pronav.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>ProNav</h3>
+        </article>
+        <article data-result="success">
+          <div class="result-badge">✓ Success</div>
+          <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/adaptive-granularity-baseline.jpg">
+            <source data-src="videos/adaptive-granularity-baseline.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>w/o adaptive granularity</h3>
+        </article>
+      </div>
+      <p class="note">
+        More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
+      </p>
+    </section>
+
+
+  </main>
+
+  <script>
+    (() => {
+      const canvas = document.querySelector('.topology-background');
+      const context = canvas.getContext('2d');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let nodes = [];
+      let width = 0;
+      let height = 0;
+      let frame;
+
+      function seedNodes() {
+        const count = Math.max(28, Math.min(72, Math.round((width * height) / 24000)));
+        nodes = Array.from({ length: count }, () => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          r: Math.random() * 1.15 + 0.8
+        }));
+      }
+
+      function resize() {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        seedNodes();
+        draw();
+      }
+
+      function draw() {
+        context.clearRect(0, 0, width, height);
+        const linkDistance = Math.min(180, Math.max(120, width * 0.15));
+
+        nodes.forEach((node, i) => {
+          for (let j = i + 1; j < nodes.length; j += 1) {
+            const other = nodes[j];
+            const dx = node.x - other.x;
+            const dy = node.y - other.y;
+            const distance = Math.hypot(dx, dy);
+            if (distance < linkDistance) {
+              context.beginPath();
+              context.moveTo(node.x, node.y);
+              context.lineTo(other.x, other.y);
+              context.strokeStyle = `rgba(40, 119, 224, ${0.26 * (1 - distance / linkDistance)})`;
+              context.lineWidth = 0.9;
+              context.stroke();
+            }
+          }
+        });
+
+        nodes.forEach(node => {
+          context.beginPath();
+          context.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+          context.fillStyle = 'rgba(31, 111, 222, 0.62)';
+          context.fill();
+        });
+      }
+
+      function animate() {
+        nodes.forEach(node => {
+          node.x += node.vx;
+          node.y += node.vy;
+          if (node.x < -12 || node.x > width + 12) node.vx *= -1;
+          if (node.y < -12 || node.y > height + 12) node.vy *= -1;
+        });
+        draw();
+        if (!reduceMotion.matches) frame = requestAnimationFrame(animate);
+      }
+
+      reduceMotion.addEventListener('change', () => {
+        cancelAnimationFrame(frame);
+        if (!reduceMotion.matches) animate();
+        else draw();
+      });
+      window.addEventListener('resize', resize, { passive: true });
+      resize();
+      if (!reduceMotion.matches) animate();
+    })();
+
+    const lazyVideos = document.querySelectorAll('.lazy-video');
+    const loadLazyVideo = video => {
+      if (video.dataset.loaded) return;
+
+      video.querySelectorAll('source[data-src]').forEach(source => {
+        source.src = source.dataset.src;
+        source.removeAttribute('data-src');
+      });
+      video.dataset.loaded = 'true';
+      video.load();
+    };
+
+    if ('IntersectionObserver' in window) {
+      const lazyVideoObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          loadLazyVideo(entry.target);
+          lazyVideoObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: '300px 0px' });
+
+      lazyVideos.forEach(video => lazyVideoObserver.observe(video));
+    } else {
+      lazyVideos.forEach(loadLazyVideo);
+    }
+
+    // Load immediately when a visitor is about to start playback, including before
+    // the observer callback has run for a newly visible video.
+    lazyVideos.forEach(video => {
+      video.addEventListener('pointerdown', () => loadLazyVideo(video), { once: true });
+      video.addEventListener('keydown', () => loadLazyVideo(video), { once: true });
+    });
+
+    document.querySelectorAll('.video-grid').forEach(grid => {
+      const videos = [...grid.querySelectorAll('video')];
+      const shouldSync = !grid.classList.contains('no-sync');
+      let syncing = false;
+
+      videos.forEach((v, i) => {
+        v.addEventListener('play', () => {
+          if (!shouldSync || syncing) return;
+          syncing = true;
+          const t = v.currentTime;
+          videos.forEach((o, j) => {
+            if (i !== j) {
+              loadLazyVideo(o);
+              o.currentTime = t;
+              setTimeout(() => o.play().catch(() => {}), 50);
+            }
+          });
+          setTimeout(() => { syncing = false; }, 100);
+        });
+
+        v.addEventListener('pause', () => {
+          if (!shouldSync || syncing || v.ended) return;
+          syncing = true;
+          videos.forEach((o, j) => { if (i !== j) o.pause(); });
+          setTimeout(() => { syncing = false; }, 100);
+        });
+
+        v.addEventListener('play', () => {
+          const badge = v.closest('article').querySelector('.result-badge');
+          if (badge) badge.classList.remove('show');
+        });
+
+        v.addEventListener('ended', () => {
+          const badge = v.closest('article').querySelector('.result-badge');
+          if (badge) badge.classList.add('show');
+        });
+      });
+    });
+  </script>
+
+  <footer>
+    <p>
+      Website structure inspired by the
+      <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>.
+    </p>
+  </footer>
+</body>
+</html>

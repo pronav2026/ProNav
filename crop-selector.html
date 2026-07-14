@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Video crop selector</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #111827; color: #e5e7eb; }
+    main { width: min(1180px, calc(100% - 32px)); margin: 24px auto 48px; }
+    h1 { margin: 0 0 8px; font-size: clamp(1.35rem, 2.2vw, 2rem); }
+    p { color: #aab4c5; margin: 0 0 18px; }
+    .stage { position: relative; overflow: hidden; border: 1px solid #374151; border-radius: 12px; background: #030712; box-shadow: 0 18px 50px #0006; }
+    canvas { display: block; width: 100%; height: auto; cursor: crosshair; touch-action: none; }
+    .readout { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; margin-top: 16px; padding: 16px 18px; border: 1px solid #374151; border-radius: 10px; background: #1f2937; }
+    code { color: #93c5fd; font-size: 1rem; word-break: break-word; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { border: 0; border-radius: 8px; padding: 10px 14px; font: inherit; font-weight: 650; color: #0f172a; background: #93c5fd; cursor: pointer; }
+    button.secondary { color: #d1d5db; background: #374151; }
+    button:hover { filter: brightness(1.08); }
+    .hint { margin-top: 12px; font-size: .9rem; }
+    @media (max-width: 650px) { main { width: min(100% - 18px, 1180px); margin-top: 14px; } .readout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Choose the video crop region</h1>
+    <p>Drag from the upper-left corner to the lower-right corner. Coordinates below are mapped to the indoor-scene frame (2062 × 1288).</p>
+    <div class="stage"><canvas id="cropCanvas" aria-label="Interactive crop selector"></canvas></div>
+    <div class="readout">
+      <code id="coordinates">Drag on the image to select a region.</code>
+      <div class="actions">
+        <button id="copyButton" type="button">Copy coordinates</button>
+        <button id="resetButton" class="secondary" type="button">Reset</button>
+      </div>
+    </div>
+    <p class="hint">The preview is half-size for display; the values shown are full-resolution source pixels and are rounded to even numbers for video encoding.</p>
+  </main>
+  <script>
+    const SOURCE_WIDTH = 2062;
+    const SOURCE_HEIGHT = 1288;
+    const image = new Image();
+    image.src = 'assets/posters/indoor-scene-showcase.jpg';
+    image.alt = 'Video frame preview';
+    const canvas = document.querySelector('#cropCanvas');
+    const ctx = canvas.getContext('2d');
+    const output = document.querySelector('#coordinates');
+    let selection = null;
+    let dragging = false;
+    let start = null;
+
+    const even = value => Math.max(0, Math.round(value / 2) * 2);
+    const pointerPosition = event => {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: Math.max(0, Math.min(canvas.width, (event.clientX - rect.left) * canvas.width / rect.width)),
+        y: Math.max(0, Math.min(canvas.height, (event.clientY - rect.top) * canvas.height / rect.height))
+      };
+    };
+    const normalized = (a, b) => ({
+      x: Math.min(a.x, b.x), y: Math.min(a.y, b.y),
+      w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y)
+    });
+    function draw() {
+      if (!image.complete) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      if (!selection || selection.w < 1 || selection.h < 1) return;
+      ctx.save();
+      ctx.fillStyle = 'rgba(0, 0, 0, .48)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(selection.x, selection.y, selection.w, selection.h);
+      ctx.drawImage(image, selection.x, selection.y, selection.w, selection.h, selection.x, selection.y, selection.w, selection.h);
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([10, 6]);
+      ctx.strokeRect(selection.x + 1.5, selection.y + 1.5, selection.w - 3, selection.h - 3);
+      ctx.restore();
+      const sx = SOURCE_WIDTH / canvas.width;
+      const sy = SOURCE_HEIGHT / canvas.height;
+      const x = even(selection.x * sx);
+      const y = even(selection.y * sy);
+      const w = even(selection.w * sx);
+      const h = even(selection.h * sy);
+      output.textContent = `crop=${w}:${h}:${x}:${y}  |  top-left (${x}, ${y}), bottom-right (${x + w}, ${y + h})`;
+    }
+    image.onload = () => { canvas.width = image.naturalWidth; canvas.height = image.naturalHeight; draw(); };
+    canvas.addEventListener('pointerdown', event => { canvas.setPointerCapture(event.pointerId); dragging = true; start = pointerPosition(event); selection = { x: start.x, y: start.y, w: 0, h: 0 }; draw(); });
+    canvas.addEventListener('pointermove', event => { if (!dragging) return; selection = normalized(start, pointerPosition(event)); draw(); });
+    canvas.addEventListener('pointerup', event => { if (!dragging) return; dragging = false; canvas.releasePointerCapture(event.pointerId); });
+    canvas.addEventListener('pointercancel', () => { dragging = false; });
+    document.querySelector('#resetButton').addEventListener('click', () => { selection = null; output.textContent = 'Drag on the image to select a region.'; draw(); });
+    document.querySelector('#copyButton').addEventListener('click', async () => { if (!selection || !output.textContent.startsWith('crop=')) return; await navigator.clipboard.writeText(output.textContent); });
+  </script>
+</body>
+</html>
