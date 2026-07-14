@@ -166,7 +166,7 @@
         <figure class="paper-figure robot-card robot-video-figure" data-label="03 / SCENE">
           <video class="robot-demo-video lazy-video" controls preload="none" playsinline
                  poster="assets/posters/indoor-scene-showcase.jpg">
-            <source data-src="videos/indoor-scene-showcase.mp4" type="video/mp4" />
+            <source src="videos/indoor-scene-showcase.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <figcaption>Indoor scene showcase from a real-world scan.</figcaption>
@@ -209,7 +209,7 @@
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/potted-plant-search.jpg">
-            <source data-src="videos/potted-plant-search.mp4" type="video/mp4" />
+            <source src="videos/potted-plant-search.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>Potted plant search</h3>
@@ -217,7 +217,7 @@
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/air-conditioner-search.jpg">
-            <source data-src="videos/air-conditioner-search.mp4?v=20260710-mask-29" type="video/mp4" />
+            <source src="videos/air-conditioner-search.mp4?v=20260710-mask-29" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>Air conditioner search</h3>
@@ -225,7 +225,7 @@
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/trash-can-search.jpg">
-            <source data-src="videos/trash-can-search.mp4" type="video/mp4" />
+            <source src="videos/trash-can-search.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>Trash can search</h3>
@@ -241,7 +241,7 @@
       </figure>
       <div class="video-main">
         <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/room-prior-ablation.jpg">
-          <source data-src="videos/room-prior-ablation.mp4?v=20260712-653s" type="video/mp4" />
+          <source src="videos/room-prior-ablation.mp4?v=20260712-653s" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <p>
@@ -301,7 +301,7 @@
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/room-prior-pronav.jpg">
-            <source data-src="videos/room-prior-pronav.mp4" type="video/mp4" />
+            <source src="videos/room-prior-pronav.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>ProNav</h3>
@@ -309,7 +309,7 @@
         <article data-result="timeout">
           <div class="result-badge">✗ Timeout</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/room-prior-baseline.jpg">
-            <source data-src="videos/room-prior-baseline.mp4" type="video/mp4" />
+            <source src="videos/room-prior-baseline.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>Target relevance only</h3>
@@ -327,7 +327,7 @@
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/topology-pronav.jpg">
-            <source data-src="videos/topology-pronav.mp4" type="video/mp4" />
+            <source src="videos/topology-pronav.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>ProNav</h3>
@@ -335,7 +335,7 @@
         <article data-result="timeout">
           <div class="result-badge">✗ Timeout</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/topology-baseline.jpg">
-            <source data-src="videos/topology-baseline.mp4" type="video/mp4" />
+            <source src="videos/topology-baseline.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>w/o topology-aware path</h3>
@@ -349,7 +349,7 @@
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/adaptive-granularity-pronav.jpg">
-            <source data-src="videos/adaptive-granularity-pronav.mp4" type="video/mp4" />
+            <source src="videos/adaptive-granularity-pronav.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>ProNav</h3>
@@ -357,7 +357,7 @@
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls preload="none" playsinline poster="assets/posters/adaptive-granularity-baseline.jpg">
-            <source data-src="videos/adaptive-granularity-baseline.mp4" type="video/mp4" />
+            <source src="videos/adaptive-granularity-baseline.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h3>w/o adaptive granularity</h3>
@@ -455,43 +455,20 @@
       if (!reduceMotion.matches) animate();
     })();
 
-    const lazyVideos = document.querySelectorAll('.lazy-video');
-    const loadLazyVideo = video => {
-      if (video.dataset.loaded) return;
-
-      video.querySelectorAll('source[data-src]').forEach(source => {
-        source.src = source.dataset.src;
-        source.removeAttribute('data-src');
-      });
-      video.dataset.loaded = 'true';
-      video.load();
-    };
-
-    if ('IntersectionObserver' in window) {
-      const lazyVideoObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          loadLazyVideo(entry.target);
-          lazyVideoObserver.unobserve(entry.target);
-        });
-      }, { rootMargin: '300px 0px' });
-
-      lazyVideos.forEach(video => lazyVideoObserver.observe(video));
-    } else {
-      lazyVideos.forEach(loadLazyVideo);
-    }
-
-    // Load immediately when a visitor is about to start playback, including before
-    // the observer callback has run for a newly visible video.
-    lazyVideos.forEach(video => {
-      video.addEventListener('pointerdown', () => loadLazyVideo(video), { once: true });
-      video.addEventListener('keydown', () => loadLazyVideo(video), { once: true });
-    });
-
     document.querySelectorAll('.video-grid').forEach(grid => {
       const videos = [...grid.querySelectorAll('video')];
       const shouldSync = !grid.classList.contains('no-sync');
       let syncing = false;
+
+      const playAt = (video, time) => {
+        const start = () => {
+          if (Number.isFinite(time)) video.currentTime = time;
+          video.play().catch(() => {});
+        };
+
+        if (video.readyState >= HTMLMediaElement.HAVE_METADATA) start();
+        else video.addEventListener('loadedmetadata', start, { once: true });
+      };
 
       videos.forEach((v, i) => {
         v.addEventListener('play', () => {
@@ -500,9 +477,7 @@
           const t = v.currentTime;
           videos.forEach((o, j) => {
             if (i !== j) {
-              loadLazyVideo(o);
-              o.currentTime = t;
-              setTimeout(() => o.play().catch(() => {}), 50);
+              playAt(o, t);
             }
           });
           setTimeout(() => { syncing = false; }, 100);
