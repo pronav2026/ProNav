@@ -985,6 +985,90 @@ tbody tr:last-child td {
   margin: 12px 0 0;
 }
 
+.topology-crop-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.room-prior-trajectory-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 0;
+}
+
+.room-prior-video-main {
+  margin-bottom: 8px;
+}
+
+.room-prior-trajectory-grid .topology-crop-grid {
+  margin-top: 0;
+}
+
+.trajectory-divider {
+  background: var(--line);
+}
+
+.room-prior-trajectory-description {
+  margin: 12px auto 22px;
+  max-width: 100%;
+  color: var(--muted);
+  font-size: 15px;
+  text-align: center;
+}
+
+.topology-crop {
+  display: grid;
+  grid-template-rows: 112px auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #d8e2f0;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  cursor: zoom-in;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+}
+
+.topology-crop img {
+  display: block;
+  width: 100%;
+  height: 112px;
+  object-fit: contain;
+}
+
+.topology-crop figcaption {
+  padding: 5px 2px 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.topology-crop-grid:hover .topology-crop:not(:hover) {
+  opacity: 0.64;
+}
+
+.topology-crop:hover {
+  position: relative;
+  z-index: 3;
+  overflow: visible;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.25);
+  transform: scale(1.8);
+}
+
+.topology-crop-caption {
+  margin: 14px auto 22px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
 .result-badge {
   display: none;
   align-items: center;
@@ -1059,6 +1143,100 @@ footer {
   color: var(--muted);
   text-align: center;
   font-size: 14px;
+}
+
+.theme-toggle {
+  flex: 0 0 auto;
+  margin-left: 18px;
+  padding: 6px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e6edf7;
+  --text: #bfcbda;
+  --muted: #8fa1b8;
+  --line: #27384e;
+  --soft: #101b2b;
+  --blue: #72adff;
+  --blue-hover: #a4c8ff;
+  --blue-soft: #172b48;
+}
+
+html[data-theme="dark"] body {
+  background:
+    linear-gradient(180deg, rgba(9, 18, 32, 0.1) 0, rgba(9, 18, 32, 0.84) 70vh, #09121f 100%),
+    linear-gradient(90deg, #0b1b30 0%, #173555 17%, #101f33 50%, #173555 83%, #0b1b30 100%);
+}
+
+html[data-theme="dark"] .topbar {
+  border-bottom-color: rgba(67, 91, 120, 0.72);
+  background: rgba(10, 22, 38, 0.9);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="dark"] .venue { color: #aebed2; }
+
+html[data-theme="dark"] .content-section,
+html[data-theme="dark"] main .content-section:nth-of-type(odd),
+html[data-theme="dark"] .video-grid article,
+html[data-theme="dark"] .topology-crop {
+  border-color: rgba(67, 91, 120, 0.72);
+  background: rgba(15, 29, 47, 0.86);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.23);
+}
+
+html[data-theme="dark"] .paper-figure img,
+html[data-theme="dark"] video,
+html[data-theme="dark"] .robot-visual,
+html[data-theme="dark"] .simulation-media {
+  border-color: #30435d;
+  background: #0a1422;
+}
+
+html[data-theme="dark"] .robot-card {
+  border-color: #30435d;
+  background: linear-gradient(135deg, rgba(21, 45, 75, 0.8), rgba(12, 25, 42, 0.84) 48%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+}
+
+html[data-theme="dark"] .robot-card figcaption,
+html[data-theme="dark"] .room-prior-trajectory-description { color: var(--muted); }
+
+html[data-theme="dark"] th { background: #16263a; }
+html[data-theme="dark"] .best td { background: #162d4d; }
+html[data-theme="dark"] .benchmark-table .group-end td { border-bottom-color: #50647d; }
+
+html[data-theme="dark"] footer {
+  border-top-color: rgba(67, 91, 120, 0.72);
+  background: rgba(9, 20, 34, 0.74);
+}
+
+html[data-theme="dark"] .theme-toggle {
+  border-color: #496480;
+  background: #142941;
+  color: #d6e5f7;
+}
+
+html[data-theme="dark"] .theme-toggle:hover {
+  border-color: var(--blue);
+  background: #1b385c;
+  color: var(--blue-hover);
 }
 
 @media (max-width: 900px) {

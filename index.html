@@ -8,6 +8,11 @@
   <meta property="og:description" content="Room-prior-guided exploration for zero-shot object navigation." />
   <meta property="og:image" content="assets/figures/hero-overview.jpg" />
   <title>ProNav | Room-Prior-Guided Object Navigation</title>
+  <script>
+    try {
+      if (localStorage.getItem('pronav-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+    } catch (error) {}
+  </script>
   <link rel="stylesheet" href="styles.css?v=20260714-tech-glass" />
 </head>
 <body>
@@ -22,6 +27,7 @@
       <a href="#simulation">Simulation</a>
       <!-- <a href="#citation">BibTeX</a> -->
     </div>
+    <button class="theme-toggle" type="button" aria-label="Enable dark theme" aria-pressed="false">Dark</button>
   </nav>
 
   <main>
@@ -235,20 +241,33 @@
         <h3>Room-prior ablation</h3>
         <p>ProNav vs. target relevance only on real-world scenes.</p>
       </div>
-      <figure class="paper-figure medium">
-        <img src="assets/figures/overlay-comparison.jpg" alt="Overlay comparison between ProNav and target relevance only." />
-        <figcaption>Value-map overlay comparison: ProNav (top) vs. target relevance only (bottom).</figcaption>
-      </figure>
-      <div class="video-main">
+      <div class="video-main room-prior-video-main">
         <video class="lazy-video" controls playsinline poster="assets/posters/room-prior-ablation.jpg">
           <source src="videos/room-prior-ablation.mp4?v=20260712-653s" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <p>
-          Controlled ablation comparison: ProNav uses room priors to reallocate exploration effort, while
-          the target-relevance-only variant can revisit low-priority regions.
-        </p>
       </div>
+      <div class="room-prior-trajectory-grid">
+        <div class="topology-crop-grid" role="img" aria-label="ProNav room-prior trajectory snapshots.">
+          <figure class="topology-crop"><img src="assets/figures/ProNav_7s982.png" alt="ProNav trajectory at 80 steps." /><figcaption>80 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/ProNav_16s259.png" alt="ProNav trajectory at 163 steps." /><figcaption>163 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/ProNav_18s427.png" alt="ProNav trajectory at 184 steps." /><figcaption>184 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/ProNav_21s035.png" alt="ProNav trajectory at 210 steps." /><figcaption>210 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/ProNav_31s900.png" alt="ProNav trajectory at 319 steps." /><figcaption>319 steps</figcaption></figure>
+        </div>
+        <div class="trajectory-divider" aria-hidden="true"></div>
+        <div class="topology-crop-grid" role="img" aria-label="Target-relevance-only room-prior trajectory snapshots.">
+          <figure class="topology-crop"><img src="assets/figures/TR-only_13s672.png" alt="Target-relevance-only trajectory at 137 steps." /><figcaption>137 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/TR-only_30s732.png" alt="Target-relevance-only trajectory at 307 steps." /><figcaption>307 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/TR-only_37s293.png" alt="Target-relevance-only trajectory at 373 steps." /><figcaption>373 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/TR-only_42s178.png" alt="Target-relevance-only trajectory at 422 steps." /><figcaption>422 steps</figcaption></figure>
+          <figure class="topology-crop"><img src="assets/figures/TR-only_48s375.png" alt="Target-relevance-only trajectory at 484 steps." /><figcaption>484 steps</figcaption></figure>
+        </div>
+      </div>
+      <p class="room-prior-trajectory-description">
+        Controlled ablation comparison: ProNav uses room priors to reallocate exploration effort, while
+        the target-relevance-only variant can revisit low-priority regions.
+      </p>
       <p class="note">
         More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
       </p>
@@ -319,10 +338,6 @@
         <h3>Topology-aware path efficiency ablation</h3>
         <p>Without topology-aware access cost vs. ProNav on HM3D scenes.</p>
       </div>
-      <figure class="paper-figure topology-ablation-fig">
-        <img src="assets/figures/topology-ablation.png" alt="Topology-aware access cost ablation." />
-        <figcaption>Topology-aware access cost reduces detours and improves SPL.</figcaption>
-      </figure>
       <div class="video-grid topology-video-grid">
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
@@ -330,6 +345,13 @@
             <source src="videos/topology-pronav.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          <div class="topology-crop-grid" role="img" aria-label="Upper half of the topology-aware access cost ablation, split into five inspection panels.">
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/B_topo_dist_success_step01_t1.6s.png" alt="Topology-aware path at 16 steps." /><figcaption>16 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/B_topo_dist_success_step02_t4.9s.png" alt="Topology-aware path at 49 steps." /><figcaption>49 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/B_topo_dist_success_step03_t8.1s.png" alt="Topology-aware path at 81 steps." /><figcaption>81 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/B_topo_dist_success_step04_t11.3s.png" alt="Topology-aware path at 113 steps." /><figcaption>113 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/B_topo_dist_success_step05_t14.6s.png" alt="Topology-aware path at 146 steps." /><figcaption>146 steps</figcaption></figure>
+          </div>
           <h3>ProNav</h3>
         </article>
         <article data-result="timeout">
@@ -338,9 +360,17 @@
             <source src="videos/topology-baseline.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          <div class="topology-crop-grid" role="img" aria-label="Lower half of the topology-aware access cost ablation, split into five inspection panels.">
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/A_baseline_timeout_step01_t5.0s.png" alt="Baseline path at 50 steps." /><figcaption>50 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/A_baseline_timeout_step02_t15.0s.png" alt="Baseline path at 150 steps." /><figcaption>150 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/A_baseline_timeout_step03_t24.9s.png" alt="Baseline path at 249 steps." /><figcaption>249 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/A_baseline_timeout_step04_t34.9s.png" alt="Baseline path at 349 steps." /><figcaption>349 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/topology-step-cards/A_baseline_timeout_LAST2_t49.5s.png" alt="Baseline path at 495 steps." /><figcaption>495 steps</figcaption></figure>
+          </div>
           <h3>w/o topology-aware path</h3>
         </article>
       </div>
+      <p class="topology-crop-caption">Trajectory snapshots are shown every few seconds. Hover over a panel to inspect it.</p>
       <div class="section-subheading">
         <h3>Adaptive granularity ablation</h3>
         <p>Without adaptive granularity vs. ProNav on HM3D scenes.</p>
@@ -372,6 +402,20 @@
   </main>
 
   <script>
+    (() => {
+      const button = document.querySelector('.theme-toggle');
+      const setTheme = dark => {
+        document.documentElement.toggleAttribute('data-theme', dark);
+        button.textContent = dark ? 'Light' : 'Dark';
+        button.setAttribute('aria-label', dark ? 'Enable light theme' : 'Enable dark theme');
+        button.setAttribute('aria-pressed', String(dark));
+        try { localStorage.setItem('pronav-theme', dark ? 'dark' : 'light'); } catch (error) {}
+      };
+
+      setTheme(document.documentElement.dataset.theme === 'dark');
+      button.addEventListener('click', () => setTheme(document.documentElement.dataset.theme !== 'dark'));
+    })();
+
     (() => {
       const canvas = document.querySelector('.topology-background');
       const context = canvas.getContext('2d');
@@ -454,6 +498,23 @@
       resize();
       if (!reduceMotion.matches) animate();
     })();
+
+    document.querySelectorAll('.robot-video-figure, .video-grid article, .video-main').forEach(card => {
+      const video = card.querySelector('video');
+
+      card.addEventListener('click', event => {
+        const rect = video.getBoundingClientRect();
+        const controlBarHeight = Math.min(48, rect.height * 0.25);
+
+        // Edge can keep native media-control clicks inside its Shadow DOM. Listen
+        // on the card during capture so clicks on the video picture still reach us.
+        const insideVideo = event.clientX >= rect.left && event.clientX <= rect.right
+          && event.clientY >= rect.top && event.clientY < rect.bottom - controlBarHeight;
+        if (!insideVideo) return;
+        if (video.paused) video.play().catch(() => {});
+        else video.pause();
+      }, true);
+    });
 
     document.querySelectorAll('.video-grid').forEach(grid => {
       const videos = [...grid.querySelectorAll('video')];
