@@ -13,14 +13,18 @@
       if (localStorage.getItem('pronav-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
     } catch (error) {}
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260714-tech-glass" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=20260718-editorial" />
 </head>
 <body>
   <canvas class="topology-background" aria-hidden="true"></canvas>
   <nav class="topbar" aria-label="Page navigation">
     <a href="#" class="brand">ProNav</a>
     <div>
-      <a href="#abstract">Abstract</a>
+      <a href="#overview">Overview</a>
+      <a href="#motivation">Motivation</a>
       <a href="#method">Method</a>
       <!-- <a href="#results">Results</a> -->
       <a href="#real-world">Robot Demo</a>
@@ -31,13 +35,17 @@
   </nav>
 
   <main>
-    <header class="paper-header">
+    <header id="overview" class="paper-header">
+      <video class="hero-background" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
+        <source src="videos/all_rgb_grid.mp4" type="video/mp4" />
+      </video>
       <p class="venue">Commonsense as a Prior, Not an Online Controller</p>
       <h1>
         <span class="project-name">ProNav</span>:<br />
         Room-Prior-Guided Exploration<br />
         for Zero-Shot Object Navigation
       </h1>
+      <p class="hero-summary">A room-prior-guided navigation framework for efficient, long-horizon object search.</p>
       <p class="authors">Anonymous Author(s)</p>
       <div class="paper-links" aria-label="Project links">
         <!-- <a href="#citation">Paper</a> -->
@@ -51,13 +59,14 @@
         </span>
         <!-- <a href="#results">Results</a> -->
       </div>
-      <figure class="paper-figure header-teaser">
-        <img src="assets/figures/hero-overview.jpg"
-             alt="ProNav overview showing one-time priors, online mapping, room-guided exploration, and target verification." />
-        <figcaption>Room priors guide exploration while scale-aware verification stabilizes stopping.</figcaption>
-      </figure>
       <div id="abstract" class="header-abstract">
         <h2>Abstract</h2>
+        <p class="tldr"><strong>TL;DR</strong> — ProNav tightly couples semantic room priors with geometry-aware topological planning, yielding a unified exploration strategy for efficient zero-shot object navigation.</p>
+        <figure class="paper-figure header-teaser">
+          <img src="assets/figures/hero-overview.jpg"
+               alt="ProNav overview showing one-time priors, online mapping, room-guided exploration, and target verification." />
+          <figcaption>Room priors guide exploration while scale-aware verification stabilizes stopping.</figcaption>
+        </figure>
         <p>
           Finding unseen objects in unfamiliar environments remains a fundamental challenge for embodied agents.
           Existing zero-shot object navigation approaches either rely on costly online reasoning or suffer from
@@ -74,7 +83,7 @@
       </div>
     </header>
 
-    <section class="content-section motivation">
+    <section id="motivation" class="content-section motivation">
       <h2>Motivation</h2>
       <div class="motivation-main">
         <div class="motivation-copy">
@@ -418,15 +427,22 @@
 
     (() => {
       const canvas = document.querySelector('.topology-background');
+      const topologyEnabled = true;
+      if (!topologyEnabled || !canvas) {
+        canvas?.remove();
+        return;
+      }
       const context = canvas.getContext('2d');
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
       let nodes = [];
       let width = 0;
       let height = 0;
       let frame;
+      let lastFrameTime = 0;
+      const frameInterval = 1000 / 30;
 
       function seedNodes() {
-        const count = Math.max(28, Math.min(72, Math.round((width * height) / 24000)));
+        const count = Math.max(24, Math.min(52, Math.round((width * height) / 32000)));
         nodes = Array.from({ length: count }, () => ({
           x: Math.random() * width,
           y: Math.random() * height,
@@ -437,7 +453,9 @@
       }
 
       function resize() {
-        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        // The background is intentionally soft; rendering it above 1.25× device
+        // resolution brings little visual benefit but is costly while scrolling.
+        const ratio = Math.min(window.devicePixelRatio || 1, 1.25);
         width = window.innerWidth;
         height = window.innerHeight;
         canvas.width = width * ratio;
@@ -463,8 +481,8 @@
               context.beginPath();
               context.moveTo(node.x, node.y);
               context.lineTo(other.x, other.y);
-              context.strokeStyle = `rgba(40, 119, 224, ${0.26 * (1 - distance / linkDistance)})`;
-              context.lineWidth = 0.9;
+              context.strokeStyle = `rgba(23, 107, 130, ${0.36 * (1 - distance / linkDistance)})`;
+              context.lineWidth = 1.05;
               context.stroke();
             }
           }
@@ -473,12 +491,15 @@
         nodes.forEach(node => {
           context.beginPath();
           context.arc(node.x, node.y, node.r, 0, Math.PI * 2);
-          context.fillStyle = 'rgba(31, 111, 222, 0.62)';
+          context.fillStyle = 'rgba(23, 107, 130, 0.78)';
           context.fill();
         });
       }
 
-      function animate() {
+      function animate(timestamp) {
+        frame = requestAnimationFrame(animate);
+        if (timestamp - lastFrameTime < frameInterval) return;
+        lastFrameTime = timestamp;
         nodes.forEach(node => {
           node.x += node.vx;
           node.y += node.vy;
@@ -486,17 +507,24 @@
           if (node.y < -12 || node.y > height + 12) node.vy *= -1;
         });
         draw();
-        if (!reduceMotion.matches) frame = requestAnimationFrame(animate);
       }
 
       reduceMotion.addEventListener('change', () => {
         cancelAnimationFrame(frame);
-        if (!reduceMotion.matches) animate();
+        lastFrameTime = 0;
+        if (!reduceMotion.matches) frame = requestAnimationFrame(animate);
         else draw();
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelAnimationFrame(frame);
+        else if (!reduceMotion.matches) {
+          lastFrameTime = 0;
+          frame = requestAnimationFrame(animate);
+        }
       });
       window.addEventListener('resize', resize, { passive: true });
       resize();
-      if (!reduceMotion.matches) animate();
+      if (!reduceMotion.matches) frame = requestAnimationFrame(animate);
     })();
 
     document.querySelectorAll('.robot-video-figure, .video-grid article, .video-main').forEach(card => {
