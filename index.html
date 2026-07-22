@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260718-editorial" />
+  <link rel="stylesheet" href="styles.css?v=20260722-adaptive-card" />
 </head>
 <body>
   <canvas class="topology-background" aria-hidden="true"></canvas>
@@ -111,9 +111,8 @@
       <h2>Method</h2>
       <p class="method-tagline">One room-level policy: semantic value determines search effort; topology-aware access determines feasible progress.</p>
       <figure class="paper-figure method-overview">
-        <img src="assets/figures/paper-pipeline.png"
+        <img src="assets/figures/paper-pipeline-transparent.png"
              alt="Paper pipeline for ProNav, showing target-conditioned prior initialization, multimodal environmental mapping, a semantic-geometric exploration policy, and scale-aware target verification." />
-        <figcaption>ProNav pipeline: target-conditioned priors and online room semantics define a shared room state; its active frontiers are jointly ranked by semantic utility and topology-aware access cost.</figcaption>
       </figure>
       <div class="method-list">
         <article>
@@ -121,27 +120,27 @@
             <span class="method-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M8.5 14.5a5 5 0 1 1 7 0c-.9.8-1.5 1.7-1.5 2.5h-4c0-.8-.6-1.7-1.5-2.5Z" /><path d="M12 2v2M4.9 4.9l1.4 1.4M19.1 4.9l-1.4 1.4" /></svg>
             </span>
-            <h3>One-time commonsense prior</h3>
+            <h3>One-time semantic prior</h3>
           </div>
-          <p>One pre-navigation query supplies scene-independent target-room preferences plus scale and confusable-object cues—without step-wise large-model control.</p>
+          <p>One pre-navigation query estimates target-room preferences, scale, and confusers.</p>
         </article>
         <article>
           <div class="method-heading">
             <span class="method-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2V5Z" /><path d="M9 3v16M15 5v16" /></svg>
             </span>
-            <h3>Shared room-level semantic state</h3>
+            <h3>Room-level semantic state</h3>
           </div>
-          <p>Target-room priors are grounded in online room confidence. The resulting semantic utility activates or defers rooms and adapts search density.</p>
+          <p>Online evidence grounds priors into room utility, setting activation and search density.</p>
         </article>
         <article>
           <div class="method-heading">
             <span class="method-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M6 6l6 11L18 6M6 6h12" /><circle cx="6" cy="6" r="2" /><circle cx="18" cy="6" r="2" /><circle cx="12" cy="17" r="2" /></svg>
             </span>
-            <h3>Semantic-geometric frontier selection</h3>
+            <h3>Semantic-geometric selection</h3>
           </div>
-          <p>Within active rooms, frontier semantic utility is coupled with cached topology-aware access cost, aligning high-value exploration with traversable cross-room progress.</p>
+          <p>Active frontiers balance semantic utility with cached topology-aware access cost.</p>
         </article>
         <article>
           <div class="method-heading">
@@ -150,7 +149,7 @@
             </span>
             <h3>Scale-aware verification</h3>
           </div>
-          <p>Cross-frame confidence and size checks confirm the target.</p>
+          <p>Cross-frame confidence and scale checks confirm the target.</p>
         </article>
       </div>
     </section>
@@ -158,9 +157,8 @@
     <section id="real-world" class="content-section">
       <h2>Robot Demo</h2>
       <p class="section-lead">
-        Real-world trials are conducted on low-cost robotic platforms in an office building with interconnected
-        hallways, bathrooms, computer rooms, and cluttered indoor spaces. Videos and figures below show both
-        controlled ablations and multi-target cross-room navigation cases.
+        Real-robot trials in a connected office environment evaluate topology-aware ablations and multi-target
+        cross-room navigation.
       </p>
       <div class="section-subheading">
         <h3>Platforms &amp; demo</h3>
@@ -275,9 +273,10 @@
           <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_48s375.png" alt="Target-relevance-only trajectory at 484 steps." /><figcaption>484 steps</figcaption></figure>
         </div>
       </div>
-      <p class="room-prior-trajectory-description">
-        Controlled ablation comparison: ProNav grounds target-room priors in online room semantics, activates high-evidence rooms, and allocates fine search to them. The target-relevance-only variant lacks this room-level alignment and can repeatedly search locally salient but low-priority regions.
-      </p>
+      <aside class="ablation-description">
+        <h4>Controlled ablation</h4>
+        <p>ProNav grounds target-room priors in online room semantics, activating high-evidence rooms for fine search. Target relevance alone can repeatedly favor locally salient, low-priority regions.</p>
+      </aside>
       <p class="note">
         More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
       </p>
@@ -344,15 +343,23 @@
           <h3>Local target relevance only</h3>
         </article>
       </div>
+      <aside class="ablation-description">
+        <h4>Room-level alignment</h4>
+        <p>ProNav grounds target-room priors in online room semantics, activating high-evidence rooms for fine search. Local target relevance alone can repeatedly favor salient but low-priority regions.</p>
+      </aside>
       <div class="section-subheading">
         <h3>Topology-aware path efficiency ablation</h3>
-        <p>Removing topology-aware access cost breaks the semantic–navigation coupling and can turn high semantic value into inefficient detours.</p>
       </div>
-      <figure class="paper-figure topology-paper-figure">
-        <img src="assets/figures/paper-topology-ablation.png"
-             alt="Paper topology-aware access-cost ablation: without topology cost the agent takes low-priority detours and times out; with it, the agent follows a direct cross-room path and succeeds." />
-        <figcaption>Paper ablation: semantic preference alone is insufficient. Topology-aware access cost converts high-value exploration into a short, traversable cross-room route.</figcaption>
-      </figure>
+      <div class="topology-ablation-layout">
+        <figure class="paper-figure topology-paper-figure">
+          <img src="assets/figures/paper-topology-ablation.png"
+               alt="Paper topology-aware access-cost ablation: without topology cost the agent takes low-priority detours and times out; with it, the agent follows a direct cross-room path and succeeds." />
+        </figure>
+        <aside class="topology-ablation-note">
+          <h4>Why topology matters</h4>
+          <p>Semantic preference alone is insufficient. Topology-aware access cost turns high-value exploration into a short, traversable cross-room route.</p>
+        </aside>
+      </div>
       <div class="video-grid topology-video-grid">
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
@@ -408,6 +415,10 @@
           <h3>w/o adaptive granularity</h3>
         </article>
       </div>
+      <aside class="ablation-description">
+        <h4>Adaptive granularity</h4>
+        <p>ProNav concentrates fine search in high-evidence rooms and defers low-evidence ones. Without it, fixed search granularity can waste steps or miss promising regions.</p>
+      </aside>
       <p class="note">
         More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
       </p>
@@ -420,7 +431,8 @@
     (() => {
       const button = document.querySelector('.theme-toggle');
       const setTheme = dark => {
-        document.documentElement.toggleAttribute('data-theme', dark);
+        if (dark) document.documentElement.dataset.theme = 'dark';
+        else delete document.documentElement.dataset.theme;
         button.textContent = dark ? 'Light' : 'Dark';
         button.setAttribute('aria-label', dark ? 'Enable light theme' : 'Enable dark theme');
         button.setAttribute('aria-pressed', String(dark));
@@ -448,13 +460,13 @@
       const frameInterval = 1000 / 30;
 
       function seedNodes() {
-        const count = Math.max(24, Math.min(52, Math.round((width * height) / 32000)));
+        const count = Math.max(30, Math.min(58, Math.round((width * height) / 27000)));
         nodes = Array.from({ length: count }, () => ({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.2,
-          vy: (Math.random() - 0.5) * 0.2,
-          r: Math.random() * 1.15 + 0.8
+          vx: (Math.random() - 0.5) * 0.22,
+          vy: (Math.random() - 0.5) * 0.22,
+          r: Math.random() * 1.1 + 0.95
         }));
       }
 
@@ -475,7 +487,7 @@
 
       function draw() {
         context.clearRect(0, 0, width, height);
-        const linkDistance = Math.min(180, Math.max(120, width * 0.15));
+        const linkDistance = Math.min(205, Math.max(135, width * 0.165));
 
         nodes.forEach((node, i) => {
           for (let j = i + 1; j < nodes.length; j += 1) {
@@ -487,8 +499,8 @@
               context.beginPath();
               context.moveTo(node.x, node.y);
               context.lineTo(other.x, other.y);
-              context.strokeStyle = `rgba(23, 107, 130, ${0.36 * (1 - distance / linkDistance)})`;
-              context.lineWidth = 1.05;
+              context.strokeStyle = `rgba(25, 118, 139, ${0.46 * (1 - distance / linkDistance)})`;
+              context.lineWidth = 1;
               context.stroke();
             }
           }
@@ -496,8 +508,12 @@
 
         nodes.forEach(node => {
           context.beginPath();
+          context.arc(node.x, node.y, node.r * 2.7, 0, Math.PI * 2);
+          context.fillStyle = 'rgba(85, 184, 169, 0.09)';
+          context.fill();
+          context.beginPath();
           context.arc(node.x, node.y, node.r, 0, Math.PI * 2);
-          context.fillStyle = 'rgba(23, 107, 130, 0.78)';
+          context.fillStyle = 'rgba(24, 112, 132, 0.84)';
           context.fill();
         });
       }

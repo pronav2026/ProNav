@@ -33,7 +33,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  opacity: 0.38;
+  opacity: 0.42;
   width: 100%;
   height: 100%;
   pointer-events: none;
@@ -366,6 +366,8 @@ h1 {
   display: block;
   width: 100%;
   margin: 0 auto;
+  border-top: 3px solid #7caeb8;
+  border-radius: 0;
 }
 
 .teaser,
@@ -417,7 +419,7 @@ video {
   display: block;
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 3px;
   background: #fff;
   box-shadow: 0 10px 26px rgba(22, 45, 58, 0.06);
 }
@@ -592,6 +594,8 @@ video {
   display: flex;
   flex-direction: column;
   margin: 0;
+  padding-top: 8px;
+  border-top: 2px solid #73b7aa;
 }
 
 .motivation-figure img {
@@ -599,7 +603,8 @@ video {
   width: 88%;
   margin: 0 auto;
   object-fit: contain;
-  border-color: var(--line);
+  border-color: #c7dade;
+  border-radius: 0;
   box-shadow: none;
 }
 
@@ -614,13 +619,83 @@ video {
 }
 
 .method-overview {
+  position: relative;
+  isolation: isolate;
   margin: 0 auto 28px;
+  padding: 0 10px 10px 0;
   max-width: 1120px;
 }
 
 .topology-paper-figure {
-  max-width: 1040px;
+  position: relative;
+  isolation: isolate;
+  max-width: 820px;
   margin: 0 auto 24px;
+  padding: 0 10px 10px 0;
+}
+
+.topology-ablation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  align-items: center;
+  gap: 28px;
+  max-width: 1080px;
+  margin: 0 auto 24px;
+}
+
+.topology-ablation-layout .topology-paper-figure {
+  width: 100%;
+  margin: 0;
+}
+
+.topology-ablation-note {
+  padding: 18px 0 18px 20px;
+  border-left: 2px solid #6caea3;
+}
+
+.topology-ablation-note h4 {
+  margin: 0 0 8px;
+  color: #1c5b63;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.topology-ablation-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.method-overview::before,
+.topology-paper-figure::before {
+  position: absolute;
+  z-index: -1;
+  inset: 10px 0 0 10px;
+  content: "";
+}
+
+.method-overview::before {
+  background: #e3e7ea;
+}
+
+.topology-paper-figure::before {
+  background: #c9e1df;
+}
+
+.method-overview img,
+.topology-paper-figure img {
+  position: relative;
+  border-radius: 1px;
+  box-shadow: 0 12px 24px rgba(22, 45, 58, 0.1);
+}
+
+.method-overview img {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  filter: saturate(0.78) brightness(1.035);
 }
 
 .method-tagline {
@@ -744,7 +819,7 @@ video {
   height: clamp(300px, calc((100vw - 72px) / 2.2), 470px);
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #fff;
 }
 
@@ -1023,7 +1098,7 @@ tbody tr:last-child td {
   max-width: none;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 2px;
   background: #f8fbfa;
 }
 
@@ -1097,7 +1172,7 @@ tbody tr:last-child td {
   flex-direction: column;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 3px;
   background: #fff;
 }
 
@@ -1105,7 +1180,7 @@ tbody tr:last-child td {
 .video-main video {
   height: auto;
   background: #000;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .topology-video-grid video {
@@ -1152,12 +1227,28 @@ tbody tr:last-child td {
   background: var(--line);
 }
 
-.room-prior-trajectory-description {
-  margin: 12px auto 22px;
+.ablation-description {
+  margin: 16px auto 22px;
   max-width: 100%;
+  padding: 16px 20px 17px;
+  border: 1px solid #cbdcdf;
+  border-left: 3px solid #4c9d91;
+  background: linear-gradient(100deg, rgba(222, 241, 237, 0.74), rgba(246, 249, 251, 0.82));
   color: var(--muted);
+}
+
+.ablation-description h4 {
+  margin: 0 0 5px;
+  color: #1c5b63;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ablation-description p {
+  margin: 0;
   font-size: 15px;
-  text-align: center;
+  line-height: 1.65;
 }
 
 .topology-crop {
@@ -1323,6 +1414,10 @@ html[data-theme="dark"] body {
     linear-gradient(180deg, #0c1918 0%, #102321 70vh, #0c1918 100%);
 }
 
+html[data-theme="dark"] .topology-background {
+  opacity: 0.38;
+}
+
 html[data-theme="dark"] .topbar {
   border-bottom-color: rgba(62, 99, 93, 0.72);
   background: #0c1918;
@@ -1408,6 +1503,34 @@ html[data-theme="dark"] .motivation-points p:last-child span {
   color: #a2d5c5;
 }
 
+html[data-theme="dark"] .motivation-figure {
+  border-top-color: #5cae9e;
+}
+
+html[data-theme="dark"] .motivation-figure img {
+  border-color: #31504d;
+}
+
+html[data-theme="dark"] .method-overview::before {
+  background: #394047;
+}
+
+html[data-theme="dark"] .topology-paper-figure::before {
+  background: #285f5a;
+}
+
+html[data-theme="dark"] .topology-ablation-note {
+  border-left-color: #63a99d;
+}
+
+html[data-theme="dark"] .topology-ablation-note h4 {
+  color: #8dd5c8;
+}
+
+html[data-theme="dark"] .paper-figure.method-overview img {
+  background: transparent;
+}
+
 html[data-theme="dark"] .paper-figure img,
 html[data-theme="dark"] video,
 html[data-theme="dark"] .robot-visual,
@@ -1423,7 +1546,17 @@ html[data-theme="dark"] .robot-card {
 }
 
 html[data-theme="dark"] .robot-card figcaption,
-html[data-theme="dark"] .room-prior-trajectory-description { color: var(--muted); }
+html[data-theme="dark"] .ablation-description { color: var(--muted); }
+
+html[data-theme="dark"] .ablation-description {
+  border-color: #315452;
+  border-left-color: #67b1a4;
+  background: linear-gradient(100deg, rgba(25, 66, 65, 0.76), rgba(17, 35, 51, 0.8));
+}
+
+html[data-theme="dark"] .ablation-description h4 {
+  color: #9bd8cc;
+}
 
 html[data-theme="dark"] th { background: #16263a; }
 html[data-theme="dark"] .best td { background: #162d4d; }
@@ -1480,6 +1613,15 @@ html[data-theme="dark"] .theme-toggle:hover {
 
   .motivation-main {
     grid-template-columns: 1fr;
+  }
+
+  .topology-ablation-layout {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .topology-ablation-note {
+    max-width: 820px;
   }
 
   .dataset-strip article,
