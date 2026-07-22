@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="ProNav: Room-Prior-Guided Exploration for Zero-Shot Object Navigation." />
+  <meta name="description" content="ProNav: a unified room-level semantic-geometric policy for zero-shot object navigation." />
   <meta property="og:title" content="ProNav" />
-  <meta property="og:description" content="Room-prior-guided exploration for zero-shot object navigation." />
+  <meta property="og:description" content="Aligning semantic exploration with topology-aware navigation for zero-shot object navigation." />
   <meta property="og:image" content="assets/figures/hero-overview.jpg" />
   <title>ProNav | Room-Prior-Guided Object Navigation</title>
   <script>
@@ -45,7 +45,7 @@
         Room-Prior-Guided Exploration<br />
         for Zero-Shot Object Navigation
       </h1>
-      <p class="hero-summary">A room-prior-guided navigation framework for efficient, long-horizon object search.</p>
+      <p class="hero-summary">A unified room-level policy that aligns semantic exploration with topology-aware navigation for efficient, long-horizon object search.</p>
       <p class="authors">Anonymous Author(s)</p>
       <div class="paper-links" aria-label="Project links">
         <!-- <a href="#citation">Paper</a> -->
@@ -61,24 +61,25 @@
       </div>
       <div id="abstract" class="header-abstract">
         <h2>Abstract</h2>
-        <p class="tldr"><strong>TL;DR</strong> — ProNav tightly couples semantic room priors with geometry-aware topological planning, yielding a unified exploration strategy for efficient zero-shot object navigation.</p>
+        <p class="tldr"><strong>TL;DR</strong> — ProNav uses a unified room-level semantic-geometric frontier policy: semantic utility from target-conditioned priors and online evidence controls room activation and granularity, while topology-aware access cost ranks the active frontiers.</p>
         <figure class="paper-figure header-teaser">
           <img src="assets/figures/hero-overview.jpg"
                alt="ProNav overview showing one-time priors, online mapping, room-guided exploration, and target verification." />
-          <figcaption>Room priors guide exploration while scale-aware verification stabilizes stopping.</figcaption>
+          <figcaption>A shared room-level abstraction aligns target-conditioned priors and online semantic evidence with topology-aware access cost; scale-aware verification stabilizes stopping.</figcaption>
         </figure>
         <p>
-          Finding unseen objects in unfamiliar environments remains a fundamental challenge for embodied agents.
-          Existing zero-shot object navigation approaches either rely on costly online reasoning or suffer from
-          inefficient exploration without high-level environmental priors. We introduce <strong>ProNav</strong>, a
-          training-free room-aware framework that leverages <strong>room priors</strong> for efficient navigation.
-          ProNav first obtains target-room knowledge and object-scale cues through a single pre-navigation query,
-          then performs <strong>room-guided frontier exploration</strong> during navigation. A lightweight,
-          <strong>scale-aware multi-frame verifier</strong> further improves reliability by confirming candidate
-          detections and their expected scale across frames before termination. Extensive experiments on HM3D and
-          MP3D demonstrate that ProNav achieves strong
-          zero-shot navigation performance while reducing redundant exploration. Real-world experiments on robotic
-          platforms further validate its practical effectiveness.
+          Zero-shot object navigation requires locating open-vocabulary targets in unseen environments without
+          task-specific training. Its long-horizon challenge is to combine semantic guidance, online visual evidence,
+          and geometric accessibility. Existing value-map methods estimate local relevance but often fail to couple
+          room priors with cross-room topology, leading to redundant exploration; step-wise LLM methods provide
+          broader commonsense guidance but add inference overhead and can make inconsistent decisions over long
+          horizons. <strong>ProNav</strong> is a training-free, room-aware framework with a <strong>unified room-level
+          semantic-geometric frontier-guided policy</strong> and scale-aware multi-frame verification. A single
+          pre-navigation LLM query instantiates target-room and category-level verification priors. During navigation,
+          semantic utility from those priors and online evidence controls room activation and exploration granularity,
+          then couples with topology-aware access cost to rank active frontiers. Experiments on HM3Dv1, HM3Dv2, and
+          MP3D show consistently improved path efficiency among compared training-free methods; real-world trials on
+          two low-cost robots further demonstrate deployment feasibility.
         </p>
       </div>
     </header>
@@ -87,31 +88,32 @@
       <h2>Motivation</h2>
       <div class="motivation-main">
         <div class="motivation-copy">
-          <p class="motivation-kicker">Semantic guidance meets path efficiency.</p>
+          <p class="motivation-kicker">Why room-level reasoning?</p>
           <p class="motivation-statement">
-            Commonsense as a <span>prior</span>,<br />
-            <em>not an online controller.</em>
+            Semantic evidence<br />
+            <em>meets geometric access.</em>
           </p>
-          <p class="motivation-bridge">
-            <strong>What to search</strong>: target-conditioned cues.<br />
-            <strong>Where to search</strong>: room priors identify relevant rooms.<br />
-            <strong>How to search</strong>: topology-aware costs favor efficient paths.
-          </p>
+          <div class="motivation-points">
+            <p><strong>Local maps</strong><span>Local relevance misses room context.</span></p>
+            <p><strong>Step-wise LLMs</strong><span>Repeated queries add cost and inconsistency.</span></p>
+            <p><strong>ProNav</strong><span>Room utility and access cost rank frontiers.</span></p>
+          </div>
         </div>
         <figure class="paper-figure motivation-figure">
-          <img src="assets/figures/motivation.jpg"
-               alt="Motivation comparison among local value-map exploration, step-wise LLM navigation, and ProNav." />
+          <img src="assets/figures/paper-summary.png"
+               alt="Paper motivation figure comparing local value-map methods, step-wise LLM methods, and ProNav's room-guided semantic-geometric exploration." />
+          <figcaption>(a) Local relevance; (b) step-wise LLM reasoning; (c) room-level semantic-geometric exploration.</figcaption>
         </figure>
       </div>
     </section>
 
     <section id="method" class="content-section">
       <h2>Method</h2>
-      <p class="method-tagline">Smarter exploration. Faster paths. Accurate localization.</p>
+      <p class="method-tagline">One room-level policy: semantic value determines search effort; topology-aware access determines feasible progress.</p>
       <figure class="paper-figure method-overview">
-        <img src="assets/figures/pipeline.png?v=20260712-pipeline"
-             alt="ProNav pipeline showing target-conditioned priors, multimodal mapping, room-guided exploration, and scale-aware target verification." />
-        <figcaption>ProNav pipeline: one-time priors, multimodal mapping, room-guided exploration, and scale-aware verification.</figcaption>
+        <img src="assets/figures/paper-pipeline.png"
+             alt="Paper pipeline for ProNav, showing target-conditioned prior initialization, multimodal environmental mapping, a semantic-geometric exploration policy, and scale-aware target verification." />
+        <figcaption>ProNav pipeline: target-conditioned priors and online room semantics define a shared room state; its active frontiers are jointly ranked by semantic utility and topology-aware access cost.</figcaption>
       </figure>
       <div class="method-list">
         <article>
@@ -121,25 +123,25 @@
             </span>
             <h3>One-time commonsense prior</h3>
           </div>
-          <p>Room preference, object scale, and confusable-object cues.</p>
+          <p>One pre-navigation query supplies scene-independent target-room preferences plus scale and confusable-object cues—without step-wise large-model control.</p>
         </article>
         <article>
           <div class="method-heading">
             <span class="method-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2V5Z" /><path d="M9 3v16M15 5v16" /></svg>
             </span>
-            <h3>Room-prior-guided exploration</h3>
+            <h3>Shared room-level semantic state</h3>
           </div>
-          <p>Semantic maps let room priors guide frontier selection.</p>
+          <p>Target-room priors are grounded in online room confidence. The resulting semantic utility activates or defers rooms and adapts search density.</p>
         </article>
         <article>
           <div class="method-heading">
             <span class="method-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M6 6l6 11L18 6M6 6h12" /><circle cx="6" cy="6" r="2" /><circle cx="18" cy="6" r="2" /><circle cx="12" cy="17" r="2" /></svg>
             </span>
-            <h3>Topology-aware path optimization</h3>
+            <h3>Semantic-geometric frontier selection</h3>
           </div>
-          <p>Topology-aware costs and adaptive granularity reduce detours.</p>
+          <p>Within active rooms, frontier semantic utility is coupled with cached topology-aware access cost, aligning high-value exploration with traversable cross-room progress.</p>
         </article>
         <article>
           <div class="method-heading">
@@ -248,7 +250,7 @@
       </div>
       <div class="section-subheading">
         <h3>Room-prior ablation</h3>
-        <p>ProNav vs. target relevance only on real-world scenes.</p>
+        <p>Shared room-level semantic-geometric scoring vs. local target relevance only on real-world scenes.</p>
       </div>
       <div class="video-main room-prior-video-main">
         <video class="lazy-video" controls playsinline poster="assets/posters/room-prior-ablation.jpg">
@@ -274,8 +276,7 @@
         </div>
       </div>
       <p class="room-prior-trajectory-description">
-        Controlled ablation comparison: ProNav uses room priors to reallocate exploration effort, while
-        the target-relevance-only variant can revisit low-priority regions.
+        Controlled ablation comparison: ProNav grounds target-room priors in online room semantics, activates high-evidence rooms, and allocates fine search to them. The target-relevance-only variant lacks this room-level alignment and can repeatedly search locally salient but low-priority regions.
       </p>
       <p class="note">
         More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
@@ -323,7 +324,7 @@
       </div>
       <div class="section-subheading">
         <h3>Room-prior ablation</h3>
-        <p>Target relevance only vs. ProNav on HM3D scenes.</p>
+        <p>Local target relevance only vs. ProNav's shared room-level semantic-geometric policy on HM3D scenes.</p>
       </div>
       <div class="video-grid">
         <article data-result="success">
@@ -340,13 +341,18 @@
             <source src="videos/room-prior-baseline.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <h3>Target relevance only</h3>
+          <h3>Local target relevance only</h3>
         </article>
       </div>
       <div class="section-subheading">
         <h3>Topology-aware path efficiency ablation</h3>
-        <p>Without topology-aware access cost vs. ProNav on HM3D scenes.</p>
+        <p>Removing topology-aware access cost breaks the semantic–navigation coupling and can turn high semantic value into inefficient detours.</p>
       </div>
+      <figure class="paper-figure topology-paper-figure">
+        <img src="assets/figures/paper-topology-ablation.png"
+             alt="Paper topology-aware access-cost ablation: without topology cost the agent takes low-priority detours and times out; with it, the agent follows a direct cross-room path and succeeds." />
+        <figcaption>Paper ablation: semantic preference alone is insufficient. Topology-aware access cost converts high-value exploration into a short, traversable cross-room route.</figcaption>
+      </figure>
       <div class="video-grid topology-video-grid">
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
