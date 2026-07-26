@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260722-adaptive-card" />
+  <link rel="stylesheet" href="styles.css?v=20260726-hero-tagline" />
 </head>
 <body>
   <canvas class="topology-background" aria-hidden="true"></canvas>
@@ -39,7 +39,7 @@
       <video class="hero-background" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
         <source src="videos/all_rgb_grid.mp4" type="video/mp4" />
       </video>
-      <p class="venue">Commonsense as a Prior, Not an Online Controller</p>
+      <p class="venue">Semantic evidence<br />meets geometric access.</p>
       <h1>
         <span class="project-name">ProNav</span>:<br />
         Room-Prior-Guided Exploration<br />
@@ -61,23 +61,22 @@
       </div>
       <div id="abstract" class="header-abstract">
         <h2>Abstract</h2>
-        <p class="tldr"><strong>TL;DR</strong> — ProNav uses a unified room-level semantic-geometric frontier policy: semantic utility from target-conditioned priors and online evidence controls room activation and granularity, while topology-aware access cost ranks the active frontiers.</p>
+        <p class="tldr"><strong>TL;DR</strong> — Indoor rooms naturally exhibit functional semantic partitioning and topological connectivity. ProNav leverages this structure with a unified room-level policy that combines global semantics from target-conditioned room priors, posterior local semantics from online evidence, and geometry–topology costs to adapt exploration preferences and strategies for robust, efficient object navigation.</p>
         <figure class="paper-figure header-teaser">
           <img src="assets/figures/hero-overview.jpg"
                alt="ProNav overview showing one-time priors, online mapping, room-guided exploration, and target verification." />
-          <figcaption>A shared room-level abstraction aligns target-conditioned priors and online semantic evidence with topology-aware access cost; scale-aware verification stabilizes stopping.</figcaption>
+          <figcaption>A shared room-level abstraction combines global room priors, posterior local semantics, and geometry–topology costs; scale-aware verification stabilizes stopping.</figcaption>
         </figure>
         <p>
           Zero-shot object navigation requires locating open-vocabulary targets in unseen environments without
           task-specific training. Its long-horizon challenge is to combine semantic guidance, online visual evidence,
-          and geometric accessibility. Existing value-map methods estimate local relevance but often fail to couple
-          room priors with cross-room topology, leading to redundant exploration; step-wise LLM methods provide
-          broader commonsense guidance but add inference overhead and can make inconsistent decisions over long
-          horizons. <strong>ProNav</strong> is a training-free, room-aware framework with a <strong>unified room-level
+          and geometric accessibility. <strong>ProNav</strong> is a training-free, room-aware framework with a <strong>unified room-level
           semantic-geometric frontier-guided policy</strong> and scale-aware multi-frame verification. A single
-          pre-navigation LLM query instantiates target-room and category-level verification priors. During navigation,
-          semantic utility from those priors and online evidence controls room activation and exploration granularity,
-          then couples with topology-aware access cost to rank active frontiers. Experiments on HM3Dv1, HM3Dv2, and
+          pre-navigation LLM query instantiates target-room and category-level verification priors. Indoor rooms
+          naturally exhibit functional semantic partitioning and topological connectivity. ProNav leverages this
+          structure with a unified room-level policy that combines global semantics from target-conditioned room
+          priors, posterior local semantics from online evidence, and geometry–topology costs to adapt exploration
+          preferences and strategies for robust, efficient object navigation. Experiments on HM3Dv1, HM3Dv2, and
           MP3D show consistently improved path efficiency among compared training-free methods; real-world trials on
           two low-cost robots further demonstrate deployment feasibility.
         </p>
@@ -96,7 +95,7 @@
           <div class="motivation-points">
             <p><strong>Local maps</strong><span>Local relevance misses room context.</span></p>
             <p><strong>Step-wise LLMs</strong><span>Repeated queries add cost and inconsistency.</span></p>
-            <p><strong>ProNav</strong><span>Room utility and access cost rank frontiers.</span></p>
+            <p><strong>ProNav</strong><span>Global–local semantics and geometry–topology costs guide exploration.</span></p>
           </div>
         </div>
         <figure class="paper-figure motivation-figure">
@@ -109,7 +108,7 @@
 
     <section id="method" class="content-section">
       <h2>Method</h2>
-      <p class="method-tagline">One room-level policy: semantic value determines search effort; topology-aware access determines feasible progress.</p>
+      <p class="method-tagline">One room-level policy: global priors, posterior local semantics, and geometry–topology costs jointly adapt exploration preferences and strategies.</p>
       <figure class="paper-figure method-overview">
         <img src="assets/figures/paper-pipeline-transparent.png"
              alt="Paper pipeline for ProNav, showing target-conditioned prior initialization, multimodal environmental mapping, a semantic-geometric exploration policy, and scale-aware target verification." />
@@ -131,7 +130,7 @@
             </span>
             <h3>Room-level semantic state</h3>
           </div>
-          <p>Online evidence grounds priors into room utility, setting activation and search density.</p>
+          <p>Target-conditioned priors supply global room semantics; online evidence supplies posterior local semantics that adapt exploration preferences and search granularity.</p>
         </article>
         <article>
           <div class="method-heading">
@@ -140,7 +139,7 @@
             </span>
             <h3>Semantic-geometric selection</h3>
           </div>
-          <p>Active frontiers balance semantic utility with cached topology-aware access cost.</p>
+          <p>Geometry–topology costs refine these preferences into reachable frontier choices.</p>
         </article>
         <article>
           <div class="method-heading">
@@ -165,18 +164,26 @@
         <p>Two low-cost robotic platforms and an indoor scene showcase.</p>
       </div>
       <div class="robot-grid">
-        <figure class="paper-figure robot-card" data-label="01 / PLATFORM">
+        <figure class="paper-figure robot-card interactive-platform" data-label="01 / PLATFORM">
           <div class="robot-visual robot-visual-backdrop">
             <img class="robot-backdrop" src="assets/figures/robot-card-backdrop.png" alt="" aria-hidden="true" />
             <img class="robot-photo" src="assets/figures/robot-mecanum-cropped.jpg?v=20260713-topcrop" alt="Mecanum-wheel mobile robot." />
+            <button class="part-hotspot platform-one-camera tooltip-below" type="button" aria-label="Gemini Pro RGB-D Camera"><span>Gemini Pro RGB-D Camera</span></button>
+            <button class="part-hotspot platform-one-minipc tooltip-below" type="button" aria-label="Mini PC"><span>Mini PC</span></button>
+            <button class="part-hotspot platform-one-power" type="button" aria-label="Portable Power Bank"><span>Portable Power Bank</span></button>
+            <button class="part-hotspot platform-one-base" type="button" aria-label="Mecanum-Wheel Mobile Base"><span>Mecanum-Wheel Mobile Base</span></button>
           </div>
-          <figcaption>Mecanum-wheel mobile robot with RGB-D camera.</figcaption>
+          <figcaption>Hover or tap a component to inspect Platform 01.</figcaption>
         </figure>
-        <figure class="paper-figure robot-card" data-label="02 / PLATFORM">
+        <figure class="paper-figure robot-card interactive-platform" data-label="02 / PLATFORM">
           <div class="robot-visual">
             <img class="robot-photo robot-photo-raised" src="assets/figures/robot-xlerobot.jpg?v=20260713-original" alt="XLerobot mobile dual-arm robot." />
+            <button class="part-hotspot platform-two-camera tooltip-below" type="button" aria-label="Gemini 335 RGB-D Camera"><span>Gemini 335 RGB-D Camera</span></button>
+            <button class="part-hotspot platform-two-arms" type="button" aria-label="SO-101 Dual-Arm Manipulator"><span>SO-101 Dual-Arm Manipulator</span></button>
+            <button class="part-hotspot platform-two-cart" type="button" aria-label="IKEA Utility Cart"><span>IKEA Utility Cart</span></button>
+            <button class="part-hotspot platform-two-chassis" type="button" aria-label="Mecanum-Wheel Chassis"><span>Mecanum-Wheel Chassis</span></button>
           </div>
-          <figcaption>XLerobot-configuration mobile dual-arm robot.</figcaption>
+          <figcaption>Hover or tap a component to inspect Platform 02.</figcaption>
         </figure>
         <figure class="paper-figure robot-card robot-video-figure" data-label="03 / SCENE">
           <video class="robot-demo-video lazy-video" controls playsinline
@@ -191,10 +198,19 @@
         <h3>Real-world validation</h3>
         <p>Multi-target trials, controlled ablations, and value-map overlays demonstrate cross-room navigation in cluttered indoor environments.</p>
       </div>
-      <figure class="paper-figure">
-        <img src="assets/figures/real-world-cases.jpg" alt="Four real-world ProNav navigation cases." />
-        <figcaption>Multi-target cross-room real-world trials with first-person observations and online value maps.</figcaption>
-      </figure>
+      <div class="method-segmentation-demo">
+        <div class="method-segmentation-copy">
+          <p class="method-segmentation-kicker">Online mapping</p>
+          <h3>Room segmentation in motion</h3>
+          <p>ProNav reliably segments connected indoor observations into room-level regions, grounding posterior local semantics and geometry–topology-aware frontier selection.</p>
+        </div>
+        <figure class="method-segmentation-media">
+          <video class="lazy-video" controls playsinline preload="metadata" poster="assets/posters/room-segmentation-demo.jpg">
+            <source src="videos/room-segmentation-demo.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </figure>
+      </div>
       <!--
       <div class="table-wrap compact-table">
         <table>
@@ -220,34 +236,128 @@
         </table>
       </div>
       -->
+      <div class="section-subheading multi-target-validation-heading">
+        <h3>Multi-target scene validation</h3>
+        <p>Room-prior semantic exploration substantially reduces redundant search in low-prior-value regions, while geometry–topology constraints further avoid inefficient path detours.</p>
+      </div>
       <div class="video-grid no-sync">
-        <article data-result="success">
-          <div class="result-badge">✓ Success</div>
-          <video class="lazy-video" controls playsinline poster="assets/posters/potted-plant-search.jpg">
-            <source src="videos/potted-plant-search.mp4" type="video/mp4" />
+        <article>
+          <video class="lazy-video" controls playsinline preload="metadata" poster="assets/posters/value-overlay-air-conditioner.jpg">
+            <source src="videos/value-overlay-air-conditioner.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <h3>Potted plant search</h3>
+          <h3>Air conditioner</h3>
+          <div class="key-decision-frames" role="group" aria-label="Prior-guided key decisions for Air conditioner.">
+            <div class="key-decision-heading">
+              <span>Prior-guided key decisions</span>
+              <span class="key-decision-heading-hint">Hover or tap the bulb to inspect key frames</span>
+            </div>
+            <div class="key-decision-rail">
+              <span class="key-decision-track" aria-hidden="true"></span>
+              <div class="key-decision-stop">
+                <button class="decision-bulb" type="button" aria-label="Show Air conditioner key decision frames" title="Show key decision frames">💡</button>
+                <div class="key-decision-popover">
+                  <div class="key-decision-sequence">
+                    <img src="assets/figures/figure-01.png" loading="lazy" alt="Air conditioner key decision map state." />
+                    <span class="key-decision-arrow" aria-hidden="true">→</span>
+                    <img src="assets/figures/figure-02.png" loading="lazy" alt="Air conditioner key decision value map." />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </article>
-        <article data-result="success">
-          <div class="result-badge">✓ Success</div>
-          <video class="lazy-video" controls playsinline poster="assets/posters/air-conditioner-search.jpg">
-            <source src="videos/air-conditioner-search.mp4?v=20260710-mask-29" type="video/mp4" />
+        <article>
+          <video class="lazy-video" controls playsinline preload="metadata" poster="assets/posters/value-overlay-chair.jpg">
+            <source src="videos/value-overlay-chair.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <h3>Air conditioner search</h3>
+          <h3>Chair</h3>
+          <div class="key-decision-frames" role="group" aria-label="Prior-guided key decisions for Chair.">
+            <div class="key-decision-heading">
+              <span>Prior-guided key decisions</span>
+              <span class="key-decision-heading-hint">Hover or tap the bulb to inspect key frames</span>
+            </div>
+            <div class="key-decision-rail key-decision-rail-double">
+              <span class="key-decision-track" aria-hidden="true"></span>
+              <div class="key-decision-stop">
+                <button class="decision-bulb" type="button" aria-label="Show first Chair key decision pair" title="Show key decision frames">💡</button>
+                <div class="key-decision-popover">
+                  <div class="key-decision-sequence">
+                    <img src="assets/figures/figure-03.png" loading="lazy" alt="Chair key decision map state." />
+                    <span class="key-decision-arrow" aria-hidden="true">→</span>
+                    <img src="assets/figures/figure-04.png" loading="lazy" alt="Chair key decision value map." />
+                  </div>
+                </div>
+              </div>
+              <div class="key-decision-stop">
+                <button class="decision-bulb" type="button" aria-label="Show second Chair key decision pair" title="Show key decision frames">💡</button>
+                <div class="key-decision-popover">
+                  <div class="key-decision-sequence">
+                    <img src="assets/figures/figure-05.png" loading="lazy" alt="Chair key decision map state." />
+                    <span class="key-decision-arrow" aria-hidden="true">→</span>
+                    <img src="assets/figures/figure-06.png" loading="lazy" alt="Chair key decision value map." />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </article>
-        <article data-result="success">
-          <div class="result-badge">✓ Success</div>
-          <video class="lazy-video" controls playsinline poster="assets/posters/trash-can-search.jpg">
-            <source src="videos/trash-can-search.mp4" type="video/mp4" />
+        <article>
+          <video class="lazy-video" controls playsinline preload="metadata" poster="assets/posters/value-overlay-potted-plant.jpg">
+            <source src="videos/value-overlay-potted-plant.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <h3>Trash can search</h3>
+          <h3>Potted plant</h3>
+          <div class="key-decision-frames" role="group" aria-label="Prior-guided key decisions for Potted plant.">
+            <div class="key-decision-heading">
+              <span>Prior-guided key decisions</span>
+              <span class="key-decision-heading-hint">Hover or tap the bulb to inspect key frames</span>
+            </div>
+            <div class="key-decision-rail">
+              <span class="key-decision-track" aria-hidden="true"></span>
+              <div class="key-decision-stop">
+                <button class="decision-bulb" type="button" aria-label="Show Potted plant key decision frames" title="Show key decision frames">💡</button>
+                <div class="key-decision-popover">
+                  <div class="key-decision-sequence">
+                    <img src="assets/figures/figure-07.png" loading="lazy" alt="Potted plant key decision map state." />
+                    <span class="key-decision-arrow" aria-hidden="true">→</span>
+                    <img src="assets/figures/figure-08.png" loading="lazy" alt="Potted plant key decision value map." />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article>
+          <video class="lazy-video" controls playsinline preload="metadata" poster="assets/posters/value-overlay-bag.jpg">
+            <source src="videos/value-overlay-bag.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>Bag</h3>
+        </article>
+        <article>
+          <video class="lazy-video" controls playsinline preload="metadata" poster="assets/posters/value-overlay-umbrella.jpg">
+            <source src="videos/value-overlay-umbrella.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>Umbrella</h3>
+        </article>
+        <article>
+          <video class="lazy-video" controls playsinline preload="metadata" poster="assets/posters/value-overlay-trash-can.jpg">
+            <source src="videos/value-overlay-trash-can.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <h3>Trash can</h3>
         </article>
       </div>
+      <figure class="paper-figure multi-target-validation-figure">
+        <img src="assets/figures/real-world-cases.jpg" alt="Four real-world ProNav navigation cases." />
+        <figcaption>Multi-target cross-room real-world trials with first-person observations and online value maps.</figcaption>
+      </figure>
+      <p class="anonymity-note">To preserve anonymity, portions of the videos are mosaicked.</p>
       <div class="section-subheading">
-        <h3>Room-prior ablation</h3>
+        <h3>Why room-prior matters</h3>
         <p>Shared room-level semantic-geometric scoring vs. local target relevance only on real-world scenes.</p>
       </div>
       <div class="video-main room-prior-video-main">
@@ -275,7 +385,7 @@
       </div>
       <aside class="ablation-description">
         <h4>Controlled ablation</h4>
-        <p>ProNav grounds target-room priors in online room semantics, activating high-evidence rooms for fine search. Target relevance alone can repeatedly favor locally salient, low-priority regions.</p>
+        <p>ProNav combines global room-prior semantics, posterior local semantics, and geometry–topology costs to adapt exploration preferences and search granularity. Target relevance alone can repeatedly favor locally salient, low-priority regions.</p>
       </aside>
       <p class="note">
         More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
@@ -322,7 +432,7 @@
         </article>
       </div>
       <div class="section-subheading">
-        <h3>Room-prior ablation</h3>
+        <h3>Why room-prior matters</h3>
         <p>Local target relevance only vs. ProNav's shared room-level semantic-geometric policy on HM3D scenes.</p>
       </div>
       <div class="video-grid">
@@ -345,10 +455,10 @@
       </div>
       <aside class="ablation-description">
         <h4>Room-level alignment</h4>
-        <p>ProNav grounds target-room priors in online room semantics, activating high-evidence rooms for fine search. Local target relevance alone can repeatedly favor salient but low-priority regions.</p>
+        <p>ProNav combines global room-prior semantics, posterior local semantics, and geometry–topology costs to adapt exploration preferences and search granularity. Local target relevance alone can repeatedly favor salient but low-priority regions.</p>
       </aside>
       <div class="section-subheading">
-        <h3>Topology-aware path efficiency ablation</h3>
+        <h3>Why topology matters</h3>
       </div>
       <div class="topology-ablation-layout">
         <figure class="paper-figure topology-paper-figure">
@@ -394,7 +504,7 @@
       </div>
       <p class="topology-crop-caption">Trajectory snapshots are shown every few seconds. Hover over a panel to inspect it.</p>
       <div class="section-subheading">
-        <h3>Adaptive granularity ablation</h3>
+        <h3>Why adaptive granularity matters</h3>
         <p>Without adaptive granularity vs. ProNav on HM3D scenes.</p>
       </div>
       <div class="video-grid">
@@ -417,7 +527,7 @@
       </div>
       <aside class="ablation-description">
         <h4>Adaptive granularity</h4>
-        <p>ProNav concentrates fine search in high-evidence rooms and defers low-evidence ones. Without it, fixed search granularity can waste steps or miss promising regions.</p>
+        <p>ProNav uses global room-prior and posterior local semantics to adapt exploration preferences and search granularity. Without this adaptation, fixed search granularity can waste steps or miss promising regions.</p>
       </aside>
       <p class="note">
         More experimental results, ablation comparisons, and performance analysis will be presented in detail in the paper.
