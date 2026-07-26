@@ -1460,11 +1460,12 @@ tbody tr:last-child td {
 }
 
 .anonymity-note {
-  margin: 10px auto 26px;
+  margin: 7px 0 4px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 11px;
+  line-height: 1.35;
   font-style: italic;
-  text-align: center;
+  text-align: right;
 }
 
 .result-badge {

@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260726-hero-tagline" />
+  <link rel="stylesheet" href="styles.css?v=20260727-anonymity-note" />
 </head>
 <body>
   <canvas class="topology-background" aria-hidden="true"></canvas>
@@ -108,7 +108,6 @@
 
     <section id="method" class="content-section">
       <h2>Method</h2>
-      <p class="method-tagline">One room-level policy: global priors, posterior local semantics, and geometry–topology costs jointly adapt exploration preferences and strategies.</p>
       <figure class="paper-figure method-overview">
         <img src="assets/figures/paper-pipeline-transparent.png"
              alt="Paper pipeline for ProNav, showing target-conditioned prior initialization, multimodal environmental mapping, a semantic-geometric exploration policy, and scale-aware target verification." />
@@ -160,7 +159,7 @@
         cross-room navigation.
       </p>
       <div class="section-subheading">
-        <h3>Platforms &amp; demo</h3>
+        <h3>Platforms &amp; scene</h3>
         <p>Two low-cost robotic platforms and an indoor scene showcase.</p>
       </div>
       <div class="robot-grid">
@@ -196,7 +195,6 @@
       </div>
       <div class="section-subheading">
         <h3>Real-world validation</h3>
-        <p>Multi-target trials, controlled ablations, and value-map overlays demonstrate cross-room navigation in cluttered indoor environments.</p>
       </div>
       <div class="method-segmentation-demo">
         <div class="method-segmentation-copy">
@@ -353,9 +351,9 @@
       </div>
       <figure class="paper-figure multi-target-validation-figure">
         <img src="assets/figures/real-world-cases.jpg" alt="Four real-world ProNav navigation cases." />
+        <p class="anonymity-note"><em>To preserve anonymity, portions of the videos are mosaicked.</em></p>
         <figcaption>Multi-target cross-room real-world trials with first-person observations and online value maps.</figcaption>
       </figure>
-      <p class="anonymity-note">To preserve anonymity, portions of the videos are mosaicked.</p>
       <div class="section-subheading">
         <h3>Why room-prior matters</h3>
         <p>Shared room-level semantic-geometric scoring vs. local target relevance only on real-world scenes.</p>
@@ -433,7 +431,7 @@
       </div>
       <div class="section-subheading">
         <h3>Why room-prior matters</h3>
-        <p>Local target relevance only vs. ProNav's shared room-level semantic-geometric policy on HM3D scenes.</p>
+        <p>Local relevance only vs. ProNav on HM3D.</p>
       </div>
       <div class="video-grid">
         <article data-result="success">
@@ -458,7 +456,7 @@
         <p>ProNav combines global room-prior semantics, posterior local semantics, and geometry–topology costs to adapt exploration preferences and search granularity. Local target relevance alone can repeatedly favor salient but low-priority regions.</p>
       </aside>
       <div class="section-subheading">
-        <h3>Why topology matters</h3>
+        <h3>How topology improves navigation efficiency</h3>
       </div>
       <div class="topology-ablation-layout">
         <figure class="paper-figure topology-paper-figure">
@@ -466,7 +464,7 @@
                alt="Paper topology-aware access-cost ablation: without topology cost the agent takes low-priority detours and times out; with it, the agent follows a direct cross-room path and succeeds." />
         </figure>
         <aside class="topology-ablation-note">
-          <h4>Why topology matters</h4>
+          <h4>Topology-aware routing</h4>
           <p>Semantic preference alone is insufficient. Topology-aware access cost turns high-value exploration into a short, traversable cross-room route.</p>
         </aside>
       </div>
@@ -504,8 +502,8 @@
       </div>
       <p class="topology-crop-caption">Trajectory snapshots are shown every few seconds. Hover over a panel to inspect it.</p>
       <div class="section-subheading">
-        <h3>Why adaptive granularity matters</h3>
-        <p>Without adaptive granularity vs. ProNav on HM3D scenes.</p>
+        <h3>How adaptive granularity improves navigation efficiency</h3>
+        <p>ProNav vs. fixed granularity on HM3D.</p>
       </div>
       <div class="video-grid">
         <article data-result="success">
