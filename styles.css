@@ -1366,6 +1366,64 @@ tbody tr:last-child td {
   margin-top: 18px;
 }
 
+.adaptive-granularity-crop-grid {
+  margin-top: 12px;
+}
+
+.adaptive-granularity-crop-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.adaptive-granularity-crop-grid--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.room-prior-snapshot-step {
+  margin: 5px 0 1px;
+  color: var(--muted);
+  font-size: 12.5px !important;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: none;
+}
+
+.snapshot-step-bulb {
+  display: inline;
+  margin-right: 2px;
+  font-size: 11px;
+  vertical-align: -1px;
+}
+
+.room-prior-snapshot-grid {
+  margin-top: 10px;
+}
+
+.room-prior-snapshot-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.room-prior-snapshot-grid--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.room-prior-snapshot-grid .topology-crop {
+  height: 112px;
+  grid-template-rows: 112px;
+}
+
+.room-prior-comparison-grid > article > video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+.room-prior-comparison-grid > article > h3 {
+  position: relative;
+  top: -4px;
+}
+
 .room-prior-trajectory-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
@@ -1374,16 +1432,112 @@ tbody tr:last-child td {
   margin-top: 0;
 }
 
+.room-prior-trajectory-panel {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: 10px;
+  align-content: start;
+  min-width: 0;
+}
+
 .room-prior-video-main {
   margin-bottom: 8px;
 }
 
-.room-prior-trajectory-grid .topology-crop-grid {
+.room-prior-trajectory-panel .topology-crop-grid {
+  grid-column: 1 / -1;
   margin-top: 0;
 }
 
 .trajectory-divider {
   background: var(--line);
+}
+
+.trajectory-brace-annotation {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  margin-top: 15px;
+  padding-top: 17px;
+  text-align: center;
+}
+
+.trajectory-brace-annotation--prior {
+  grid-column: 2 / 5;
+  color: #237c69;
+}
+
+.trajectory-brace-annotation--local {
+  grid-column: 2 / -1;
+  color: #9a5b68;
+}
+
+.trajectory-underbrace {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 10px;
+  border-bottom: 1.5px solid currentColor;
+}
+
+.trajectory-underbrace::before,
+.trajectory-underbrace::after {
+  position: absolute;
+  bottom: -1.5px;
+  width: 8px;
+  height: 8px;
+  content: "";
+}
+
+.trajectory-underbrace::before {
+  left: 0;
+  border-bottom: 1.5px solid currentColor;
+  border-left: 1.5px solid currentColor;
+  border-bottom-left-radius: 8px;
+}
+
+.trajectory-underbrace::after {
+  right: 0;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  border-bottom-right-radius: 8px;
+}
+
+.trajectory-underbrace > span {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.trajectory-brace-annotation p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.trajectory-brace-annotation strong,
+.trajectory-brace-annotation p span {
+  display: block;
+}
+
+.trajectory-brace-annotation strong {
+  color: currentColor;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.trajectory-brace-annotation p span {
+  margin-top: 3px;
+  color: var(--muted);
 }
 
 .ablation-description {
@@ -1804,6 +1958,14 @@ html[data-theme="dark"] .topology-crop {
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.23);
 }
 
+html[data-theme="dark"] .trajectory-brace-annotation--prior {
+  color: #7bd6c3;
+}
+
+html[data-theme="dark"] .trajectory-brace-annotation--local {
+  color: #e3a9b2;
+}
+
 html[data-theme="dark"] .header-abstract {
   border-color: var(--line);
   border-top-color: #5a9d9a;
@@ -2006,6 +2168,15 @@ html[data-theme="dark"] .theme-toggle:hover {
   .topology-ablation-layout {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+
+  .room-prior-trajectory-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .trajectory-divider {
+    display: none;
   }
 
   .topology-ablation-note {

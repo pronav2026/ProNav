@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260727-anonymity-note" />
+  <link rel="stylesheet" href="styles.css?v=20260727-key-decision-font-2of3" />
 </head>
 <body>
   <canvas class="topology-background" aria-hidden="true"></canvas>
@@ -160,7 +160,7 @@
       </p>
       <div class="section-subheading">
         <h3>Platforms &amp; scene</h3>
-        <p>Two low-cost robotic platforms and an indoor scene showcase.</p>
+        <p>Low-cost yet effective: two robotic platforms and an indoor scene.</p>
       </div>
       <div class="robot-grid">
         <figure class="paper-figure robot-card interactive-platform" data-label="01 / PLATFORM">
@@ -365,20 +365,32 @@
         </video>
       </div>
       <div class="room-prior-trajectory-grid">
-        <div class="topology-crop-grid" role="img" aria-label="ProNav room-prior trajectory snapshots.">
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_7s982.png" alt="ProNav trajectory at 80 steps." /><figcaption>80 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_16s259.png" alt="ProNav trajectory at 163 steps." /><figcaption>163 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_18s427.png" alt="ProNav trajectory at 184 steps." /><figcaption>184 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_21s035.png" alt="ProNav trajectory at 210 steps." /><figcaption>210 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_31s900.png" alt="ProNav trajectory at 319 steps." /><figcaption>319 steps</figcaption></figure>
+        <div class="room-prior-trajectory-panel room-prior-trajectory-panel--pron">
+          <div class="topology-crop-grid" role="img" aria-label="ProNav room-prior trajectory snapshots.">
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_7s982.png" alt="ProNav trajectory at 80 steps." /><figcaption>80 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_16s259.png" alt="ProNav trajectory at 163 steps." /><figcaption>163 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_18s427.png" alt="ProNav trajectory at 184 steps." /><figcaption>184 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_21s035.png" alt="ProNav trajectory at 210 steps." /><figcaption>210 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/ProNav_31s900.png" alt="ProNav trajectory at 319 steps." /><figcaption>319 steps</figcaption></figure>
+          </div>
+          <aside class="trajectory-brace-annotation trajectory-brace-annotation--prior" role="note">
+            <span class="trajectory-underbrace" aria-hidden="true"><span></span></span>
+            <p><strong>Prior-guided room entry</strong><span>Global room priors rapidly direct exploration into high-value rooms.</span></p>
+          </aside>
         </div>
         <div class="trajectory-divider" aria-hidden="true"></div>
-        <div class="topology-crop-grid" role="img" aria-label="Target-relevance-only room-prior trajectory snapshots.">
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_13s672.png" alt="Target-relevance-only trajectory at 137 steps." /><figcaption>137 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_30s732.png" alt="Target-relevance-only trajectory at 307 steps." /><figcaption>307 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_37s293.png" alt="Target-relevance-only trajectory at 373 steps." /><figcaption>373 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_42s178.png" alt="Target-relevance-only trajectory at 422 steps." /><figcaption>422 steps</figcaption></figure>
-          <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_48s375.png" alt="Target-relevance-only trajectory at 484 steps." /><figcaption>484 steps</figcaption></figure>
+        <div class="room-prior-trajectory-panel room-prior-trajectory-panel--local">
+          <div class="topology-crop-grid" role="img" aria-label="Target-relevance-only room-prior trajectory snapshots.">
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_13s672.png" alt="Target-relevance-only trajectory at 137 steps." /><figcaption>137 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_30s732.png" alt="Target-relevance-only trajectory at 307 steps." /><figcaption>307 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_37s293.png" alt="Target-relevance-only trajectory at 373 steps." /><figcaption>373 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_42s178.png" alt="Target-relevance-only trajectory at 422 steps." /><figcaption>422 steps</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/room-prior-step-cards/TR-only_48s375.png" alt="Target-relevance-only trajectory at 484 steps." /><figcaption>484 steps</figcaption></figure>
+          </div>
+          <aside class="trajectory-brace-annotation trajectory-brace-annotation--local" role="note">
+            <span class="trajectory-underbrace" aria-hidden="true"><span></span></span>
+            <p><strong>Redundant local search</strong><span>Without discriminative room priors, locally salient regions receive similar preference and are repeatedly revisited.</span></p>
+          </aside>
         </div>
       </div>
       <aside class="ablation-description">
@@ -433,13 +445,20 @@
         <h3>Why room-prior matters</h3>
         <p>Local relevance only vs. ProNav on HM3D.</p>
       </div>
-      <div class="video-grid">
+      <div class="video-grid room-prior-comparison-grid">
         <article data-result="success">
           <div class="result-badge">✓ Success</div>
           <video class="lazy-video" controls playsinline poster="assets/posters/room-prior-pronav.jpg">
             <source src="videos/room-prior-pronav.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          <div class="topology-crop-grid room-prior-snapshot-grid room-prior-snapshot-grid--four" role="group" aria-label="Four ProNav room-prior views from the key decision at step 63.">
+            <figure class="topology-crop"><img src="assets/figures/figure-19.png" alt="ProNav room-prior view 1 at the key decision, step 63." /></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-20.png" alt="ProNav room-prior view 2 at the key decision, step 63." /></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-21.png" alt="ProNav room-prior view 3 at the key decision, step 63." /></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-22.png" alt="ProNav room-prior view 4 at the key decision, step 63." /></figure>
+          </div>
+          <p class="room-prior-snapshot-step"><span class="snapshot-step-bulb" aria-hidden="true">💡</span><span>Key decision · Step 63</span></p>
           <h3>ProNav</h3>
         </article>
         <article data-result="timeout">
@@ -448,6 +467,12 @@
             <source src="videos/room-prior-baseline.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          <div class="topology-crop-grid room-prior-snapshot-grid room-prior-snapshot-grid--three" role="group" aria-label="Three local-target-relevance views from the key decision at step 53.">
+            <figure class="topology-crop"><img src="assets/figures/figure-18.png" alt="Local target relevance view 1 at the key decision, step 53." /></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-17.png" alt="Local target relevance view 2 at the key decision, step 53." /></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-16.png" alt="Local target relevance view 3 at the key decision, step 53." /></figure>
+          </div>
+          <p class="room-prior-snapshot-step"><span class="snapshot-step-bulb" aria-hidden="true">💡</span><span>Key decision · Step 53</span></p>
           <h3>Local target relevance only</h3>
         </article>
       </div>
@@ -512,6 +537,11 @@
             <source src="videos/adaptive-granularity-pronav.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          <div class="topology-crop-grid adaptive-granularity-crop-grid adaptive-granularity-crop-grid--three" role="group" aria-label="ProNav adaptive-granularity trajectory snapshots.">
+            <figure class="topology-crop"><img src="assets/figures/figure-09.png" alt="ProNav adaptive-granularity trajectory at step 10." /><figcaption>Step 10</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-10.png" alt="ProNav adaptive-granularity trajectory at step 94." /><figcaption>Step 94</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-11.png" alt="ProNav adaptive-granularity trajectory at step 112." /><figcaption>Step 112</figcaption></figure>
+          </div>
           <h3>ProNav</h3>
         </article>
         <article data-result="success">
@@ -520,6 +550,12 @@
             <source src="videos/adaptive-granularity-baseline.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          <div class="topology-crop-grid adaptive-granularity-crop-grid adaptive-granularity-crop-grid--four" role="group" aria-label="Fixed-granularity trajectory snapshots.">
+            <figure class="topology-crop"><img src="assets/figures/figure-12.png" alt="Fixed-granularity trajectory at step 10." /><figcaption>Step 10</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-13.png" alt="Fixed-granularity trajectory at step 70." /><figcaption>Step 70</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-14.png" alt="Fixed-granularity trajectory at step 91." /><figcaption>Step 91</figcaption></figure>
+            <figure class="topology-crop"><img src="assets/figures/figure-15.png" alt="Fixed-granularity trajectory at step 142." /><figcaption>Step 142</figcaption></figure>
+          </div>
           <h3>w/o adaptive granularity</h3>
         </article>
       </div>
